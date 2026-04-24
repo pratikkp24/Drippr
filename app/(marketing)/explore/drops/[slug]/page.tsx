@@ -22,8 +22,8 @@ export default function DropPage({ params }: { params: { slug: string } }) {
       {/* Hero */}
       <section className="relative aspect-[16/9] w-full max-w-[1200px] rounded-xl overflow-hidden shadow-sm">
         <Image
-          src={data.coverImage}
-          alt={data.name}
+          src={dropData.coverImage}
+          alt={dropData.name}
           fill
           className="object-cover"
           priority
@@ -32,7 +32,7 @@ export default function DropPage({ params }: { params: { slug: string } }) {
         <div className="absolute bottom-lg left-lg right-lg flex items-end justify-between">
           <div>
             <h1 className="fraunces text-[clamp(32px,5vw,64px)] text-bg leading-tight mb-2">
-              {data.name}
+              {dropData.name}
             </h1>
             <Link 
               href={`/explore/profile/${creator.username}`}
@@ -54,13 +54,13 @@ export default function DropPage({ params }: { params: { slug: string } }) {
         <div className="md:col-span-2 space-y-md">
           <h2 className="text-[12px] uppercase tracking-[0.2em] text-text-3">The story</h2>
           <p className="text-[20px] text-text-2 font-light leading-relaxed max-w-[640px]">
-            {data.story}
+            {dropData.story}
           </p>
         </div>
         <div className="space-y-md">
            <h2 className="text-[12px] uppercase tracking-[0.2em] text-text-3">Vibes</h2>
            <div className="flex flex-wrap gap-sm">
-              {data.vibeTags.map(tag => (
+              {dropData.vibeTags.map(tag => (
                 <span key={tag} className="h-8 px-md flex items-center rounded-pill bg-surface border border-border text-[12px] text-text-2">
                   {tag}
                 </span>
@@ -68,7 +68,7 @@ export default function DropPage({ params }: { params: { slug: string } }) {
            </div>
            <h2 className="text-[12px] uppercase tracking-[0.2em] text-text-3 mt-lg">Season</h2>
            <div className="flex flex-wrap gap-sm">
-              {data.season.map(s => (
+              {dropData.season.map(s => (
                 <span key={s} className="h-8 px-md flex items-center rounded-pill bg-surface border border-border text-[12px] text-text-2">
                   {s.toLowerCase()}
                 </span>
