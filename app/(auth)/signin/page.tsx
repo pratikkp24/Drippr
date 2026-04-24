@@ -17,7 +17,7 @@ function SignInInner() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get("next") || "/home";
-  const supabase = await createClient();
+  const supabase = createClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);

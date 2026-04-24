@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const supabase = await createClient();
+  const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
