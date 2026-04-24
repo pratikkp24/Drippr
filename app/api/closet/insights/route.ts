@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import prisma from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
+
 // GET /api/closet/insights?from=YYYY-MM-DD&to=YYYY-MM-DD
 // Defaults to current month.
 export async function GET(req: Request) {

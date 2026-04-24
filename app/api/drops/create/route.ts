@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import prisma from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
+
 export async function POST(req: Request) {
   try {
     const { title, story, pieceIds, coverImage } = await req.json();
@@ -37,6 +40,29 @@ export async function POST(req: Request) {
         }
       }
     });
+
+    // Notify followers of the creator
+    const [followers, me] = await Promise.all([
+      prisma.follow.findMany({
+        where: { followingId: user.id },
+        select: { followerId: true }
+      }),
+      prisma.user.findUnique({
+        where: { id: user.id },
+        select: { displayName: true, username: true }
+      })
+    ]);
+    if (followers.length > 0 && me) {
+      await prisma.notification.createMany({
+        data: followers.map((f) => ({
+          userId: f.followerId,
+          type: "DROP_PUBLISHED_BY_FOLLOWED" as const,
+          title: `${me.displayName} published a new drop`,
+          body: title,
+          actionUrl: `/drops/${slug}`
+        }))
+      });
+    }
 
     return NextResponse.json({ success: true, drop });
   } catch (error) {

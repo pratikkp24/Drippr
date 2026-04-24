@@ -5,29 +5,28 @@ import prisma from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 
-// DELETE /api/user/pieces/[pieceId] — soft archive
+// DELETE /api/comments/[id] — own comments only
 export async function DELETE(
   _req: Request,
-  { params }: { params: { pieceId: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const piece = await prisma.piece.findUnique({ where: { id: params.pieceId } });
-    if (!piece || piece.userId !== user.id) {
+    const comment = await prisma.comment.findUnique({
+      where: { id: params.id },
+      select: { userId: true }
+    });
+    if (!comment || comment.userId !== user.id) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    await prisma.piece.update({
-      where: { id: params.pieceId },
-      data: { isArchived: true }
-    });
-
+    await prisma.comment.delete({ where: { id: params.id } });
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error("Archive piece error:", err);
+    console.error("comment DELETE error:", err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

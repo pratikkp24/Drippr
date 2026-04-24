@@ -61,11 +61,16 @@ const config: Config = {
         slideUp: {
           from: { opacity: "0", transform: "translateY(16px)" },
           to: { opacity: "1", transform: "translateY(0)" }
+        },
+        fadeIn: {
+          from: { opacity: "0" },
+          to: { opacity: "1" }
         }
       },
       animation: {
         screenIn: "screenIn 240ms ease-out",
-        slideUp: "slideUp 280ms ease-out both"
+        slideUp: "slideUp 280ms ease-out both",
+        fadeIn: "fadeIn 180ms ease-out"
       }
     }
   },

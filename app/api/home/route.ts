@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { MOCK_CREATORS, MOCK_DROPS, MOCK_PIECES } from "@/lib/mock";
 
+export const dynamic = "force-dynamic";
+
+
 type HomeDrop = {
   id: string;
   slug: string;

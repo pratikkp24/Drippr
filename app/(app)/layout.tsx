@@ -14,6 +14,7 @@ import { prisma } from "@/lib/prisma";
 import { getUser } from "@/lib/supabase/server";
 import { SignOutButton } from "./sign-out-button";
 import { QuickLogPill } from "@/components/shared/QuickLogPill";
+import { NotificationBell } from "@/components/shared/NotificationBell";
 
 const NAV_ITEMS = [
   { href: "/home", label: "Home", icon: Home },
@@ -69,20 +70,29 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </nav>
 
         <div className="p-lg border-t border-border space-y-lg">
-          <div className="flex items-center space-x-md px-sm">
-            <div className="relative w-10 h-10 rounded-full overflow-hidden bg-border shrink-0">
-              <Image
-                src={dbUser.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(dbUser.displayName)}&bg=E6DDCF&color=1F3D2B`}
-                alt={dbUser.displayName}
-                fill
-                sizes="40px"
-                className="object-cover"
-              />
-            </div>
-            <div className="min-w-0">
-              <p className="font-sans font-medium text-[14px] text-text-1 truncate">{dbUser.displayName}</p>
-              <p className="font-sans font-light text-[12px] text-text-3 truncate">@{dbUser.username}</p>
-            </div>
+          <div className="flex items-center justify-between gap-sm">
+            <Link
+              href={`/profile/${dbUser.username}`}
+              className="flex items-center gap-md px-sm min-w-0 flex-1 hover:opacity-80 transition-opacity"
+            >
+              <div className="relative w-10 h-10 rounded-full overflow-hidden bg-border shrink-0">
+                <Image
+                  src={
+                    dbUser.avatarUrl ||
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(dbUser.displayName)}&bg=E6DDCF&color=1F3D2B`
+                  }
+                  alt={dbUser.displayName}
+                  fill
+                  sizes="40px"
+                  className="object-cover"
+                />
+              </div>
+              <div className="min-w-0">
+                <p className="font-sans font-medium text-[14px] text-text-1 truncate">{dbUser.displayName}</p>
+                <p className="font-sans font-light text-[12px] text-text-3 truncate">@{dbUser.username}</p>
+              </div>
+            </Link>
+            <NotificationBell userId={dbUser.id} />
           </div>
 
           <Link

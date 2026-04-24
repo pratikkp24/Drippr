@@ -3,6 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import prisma from "@/lib/prisma";
 import type { Occasion, TimeOfDay } from "@prisma/client";
 
+export const dynamic = "force-dynamic";
+
+
 // GET /api/outfits/schedule?from=YYYY-MM-DD&to=YYYY-MM-DD
 export async function GET(req: Request) {
   try {

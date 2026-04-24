@@ -3,6 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import prisma from "@/lib/prisma";
 import type { Occasion, Feeling } from "@prisma/client";
 
+export const dynamic = "force-dynamic";
+
+
 // GET /api/wear-logs?from=YYYY-MM-DD&to=YYYY-MM-DD
 export async function GET(req: Request) {
   try {

@@ -31,6 +31,7 @@ model User {
   collections    Collection[]
   outboundClicks OutboundClick[]
   notifications  Notification[]
+  comments       Comment[]
 
   @@index([username])
 }
@@ -132,10 +133,29 @@ model Drop {
   pieces         DropPiece[]
   saves          SavedDrop[]
   outboundClicks OutboundClick[]
+  comments       Comment[]
 
   @@index([userId])
   @@index([slug])
   @@index([publishedAt])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  dropId    String
+  userId    String
+  body      String
+  parentId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  drop    Drop      @relation(fields: [dropId], references: [id], onDelete: Cascade)
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies Comment[] @relation("CommentReplies")
+
+  @@index([dropId, createdAt])
+  @@index([userId])
 }
 
 model DropPiece {
