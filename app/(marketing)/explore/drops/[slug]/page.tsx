@@ -6,16 +6,16 @@ import { SignupOverlay } from "@/components/explore/SignupOverlay";
 import { formatINR } from "@/lib/utils";
 
 export default function DropPage({ params }: { params: { slug: string } }) {
-  const data = getDropBySlug(params.slug);
+  const dropData = getDropBySlug(params.slug);
 
-  if (!data) {
+  if (!dropData) {
     notFound();
   }
 
-  // data IS the drop, so we just extract creator and pieces
-  const { creator, pieces } = data;
+  // dropData IS the drop, so we just extract creator and pieces
+  const { creator, pieces } = dropData;
   const profileData = getCreatorProfile(creator.username);
-  const otherDrops = profileData?.drops.filter(d => d.id !== data.id).slice(0, 3) || [];
+  const otherDrops = profileData?.drops.filter(d => d.id !== dropData.id).slice(0, 3) || [];
 
   return (
     <div className="animate-screenIn pt-xl space-y-2xl">
