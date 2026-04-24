@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 // GET /api/notifications?limit=20
 export async function GET(req: Request) {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -34,7 +34,7 @@ export async function GET(req: Request) {
 // PATCH /api/notifications  body: { ids?: string[], markAllRead?: boolean }
 export async function PATCH(req: Request) {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

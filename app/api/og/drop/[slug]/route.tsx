@@ -8,7 +8,8 @@ export const runtime = "nodejs";
 
 const SIZE = { width: 1200, height: 630 };
 
-export async function GET(_req: Request, { params }: { params: { slug: string } }) {
+export async function GET(_req: Request, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const drop = await prisma.drop.findUnique({
     where: { slug: params.slug },
     select: {

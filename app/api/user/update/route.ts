@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function PATCH(req: Request) {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user: authUser } } = await supabase.auth.getUser();
 
     if (!authUser) {

@@ -10,7 +10,8 @@ import { ShareButton } from "@/components/drops/ShareButton";
 import { ShopButton } from "@/components/drops/ShopButton";
 import { CommentsSection } from "@/components/drops/CommentsSection";
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const drop = await prisma.drop.findUnique({
     where: { slug: params.slug },
     select: {
@@ -40,7 +41,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function DropDetailsPage({ params }: { params: { slug: string } }) {
+export default async function DropDetailsPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const { slug } = params;
 
   const drop = await prisma.drop.findUnique({
