@@ -45,10 +45,10 @@ export default async function LandingPage() {
               Start your closet
             </Link>
             <Link
-              href="/signin"
+              href="/explore"
               className="h-[54px] px-xl inline-flex items-center rounded-md border border-border text-text-1 text-[15px] font-medium hover:border-accent transition-colors"
             >
-              Sign in
+              Explore first
             </Link>
           </div>
         </div>
