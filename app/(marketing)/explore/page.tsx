@@ -11,33 +11,34 @@ export default function ExploreHomePage() {
   return (
     <div className="space-y-3xl animate-screenIn pt-xl">
       {/* Hero: Featured Drop */}
-      <section className="relative h-[600px] rounded-xl overflow-hidden group">
+      <section className="relative aspect-[4/5] sm:aspect-[16/9] lg:aspect-[21/9] lg:max-h-[460px] rounded-xl overflow-hidden group">
         <Image
           src={featuredDrop.coverImage}
           alt={featuredDrop.name}
           fill
+          sizes="(max-width: 1200px) 100vw, 1200px"
           className="object-cover transition-transform duration-700 group-hover:scale-105"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent" />
-        <div className="absolute bottom-xl left-xl right-xl">
-          <p className="text-[12px] tracking-[2px] uppercase text-bg/80 mb-sm">
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/20 to-transparent" />
+        <div className="absolute bottom-md sm:bottom-lg left-md sm:left-lg right-md sm:right-lg">
+          <p className="text-[10px] sm:text-[11px] tracking-[2px] uppercase text-bg/80 mb-xs">
             Featured drop
           </p>
-          <h1 className="fraunces text-[clamp(44px,7vw,84px)] leading-[1.02] text-bg mb-lg">
+          <h1 className="fraunces text-[clamp(26px,6vw,52px)] leading-[1.05] text-bg mb-sm sm:mb-md">
             {featuredDrop.name.split(" ").slice(0, -1).join(" ")}{" "}
             <em className="italic">{featuredDrop.name.split(" ").pop()}</em>
           </h1>
-          <div className="flex items-center gap-lg">
-            <Link 
+          <div className="flex items-center gap-md flex-wrap">
+            <Link
               href={`/explore/drops/${featuredDrop.slug}`}
-              className="h-[54px] px-xl inline-flex items-center rounded-md bg-bg text-primary text-[15px] font-medium hover:bg-surface transition-colors"
+              className="h-[40px] sm:h-[44px] px-md sm:px-lg inline-flex items-center rounded-md bg-bg text-primary text-[13px] sm:text-[14px] font-medium hover:bg-surface transition-colors"
             >
               View drop
             </Link>
-            <Link 
+            <Link
               href={`/explore/profile/${featuredDrop.creator.username}`}
-              className="text-bg/90 text-[15px] hover:text-bg transition-colors"
+              className="text-bg/90 text-[13px] sm:text-[14px] hover:text-bg transition-colors"
             >
               by @{featuredDrop.creator.username}
             </Link>
@@ -48,14 +49,14 @@ export default function ExploreHomePage() {
       {/* Creators Horizontal Scroll */}
       <section>
         <div className="flex items-end justify-between mb-lg">
-          <h2 className="fraunces text-3xl text-text-1">Creators you should <em className="italic">know.</em></h2>
+          <h2 className="fraunces text-[clamp(24px,4vw,32px)] text-text-1">Creators you should <em className="italic">know.</em></h2>
         </div>
-        <div className="flex gap-lg overflow-x-auto pb-lg -mx-lg px-lg scrollbar-hide">
+        <div className="flex gap-md sm:gap-lg overflow-x-auto pb-lg -mx-md sm:-mx-lg px-md sm:px-lg scrollbar-hide">
           {MOCK_CREATORS.map((creator) => (
-            <Link 
+            <Link
               key={creator.id}
               href={`/explore/profile/${creator.username}`}
-              className="flex-shrink-0 w-[260px] bg-surface p-lg rounded-lg border border-border hover:border-accent transition-all group"
+              className="flex-shrink-0 w-[220px] sm:w-[260px] bg-surface p-md sm:p-lg rounded-lg border border-border hover:border-accent transition-all group"
             >
               <div className="relative w-16 h-16 rounded-full overflow-hidden mb-md border-2 border-bg group-hover:border-accent transition-colors">
                 <Image
@@ -81,7 +82,7 @@ export default function ExploreHomePage() {
       {/* Trending Drops Grid */}
       <section>
         <div className="flex items-end justify-between mb-lg">
-          <h2 className="fraunces text-3xl text-text-1">Trending <em className="italic">drops.</em></h2>
+          <h2 className="fraunces text-[clamp(24px,4vw,32px)] text-text-1">Trending <em className="italic">drops.</em></h2>
           <Link href="/explore/discover" className="text-[14px] text-text-2 hover:text-primary transition-colors">
             View all →
           </Link>
@@ -112,9 +113,9 @@ export default function ExploreHomePage() {
       {/* Discover Pieces Grid */}
       <section>
         <div className="flex items-end justify-between mb-lg">
-          <h2 className="fraunces text-3xl text-text-1">Discover <em className="italic">pieces.</em></h2>
+          <h2 className="fraunces text-[clamp(24px,4vw,32px)] text-text-1">Discover <em className="italic">pieces.</em></h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-lg">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-md sm:gap-lg">
           {creatorPicks.slice(0, 12).map((piece) => (
             <div key={piece.id} className="group">
               <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-surface mb-md">

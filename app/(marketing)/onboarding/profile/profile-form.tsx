@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useDebounce } from "@/hooks/use-debounce";
+import { StepIndicator } from "@/components/onboarding/StepIndicator";
 
 const usernameSchema = z
   .string()
@@ -82,6 +83,7 @@ export default function OnboardingProfileForm() {
   return (
     <main className="min-h-screen bg-bg flex flex-col items-center justify-center p-lg sm:p-xl">
       <div className="w-full max-w-[420px] animate-slideUp">
+        <StepIndicator current="profile" />
         <h1 className="fraunces text-[44px] leading-[1.05] text-text-1 mb-sm">
           Pick your <em className="italic">handle.</em>
         </h1>

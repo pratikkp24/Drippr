@@ -22,22 +22,25 @@ export function GuestBanner() {
   if (!isVisible) return null;
 
   return (
-    <div className="h-[44px] bg-surface border-b border-border flex items-center px-lg justify-between animate-screenIn">
-      <div className="flex-1 flex justify-center items-center gap-sm">
-        <p className="text-[13px] text-text-2">
-          You're exploring <span className="font-semibold text-primary">Drippr.</span> Sign up to save, follow, build your closet.
+    <div className="bg-surface border-b border-border px-md sm:px-lg py-2 animate-screenIn">
+      <div className="flex items-center gap-sm max-w-[1200px] mx-auto">
+        <p className="flex-1 text-[12px] sm:text-[13px] text-text-2 leading-snug">
+          <span className="hidden sm:inline">You’re exploring </span>
+          <span className="font-semibold text-primary">Drippr.</span>{" "}
+          <span className="hidden sm:inline">Sign up to save, follow, build your closet.</span>
+          <span className="sm:hidden">Sign up to save and follow.</span>{" "}
+          <Link href="/signup" className="font-medium text-primary hover:underline whitespace-nowrap">
+            Sign up →
+          </Link>
         </p>
-        <Link href="/signup" className="text-[13px] font-medium text-primary hover:underline">
-          Sign up →
-        </Link>
+        <button
+          onClick={dismiss}
+          className="p-xs text-text-3 hover:text-text-1 transition-colors shrink-0"
+          aria-label="Dismiss"
+        >
+          <X size={16} />
+        </button>
       </div>
-      <button 
-        onClick={dismiss}
-        className="p-xs text-text-3 hover:text-text-1 transition-colors"
-        aria-label="Dismiss"
-      >
-        <X size={16} />
-      </button>
     </div>
   );
 }

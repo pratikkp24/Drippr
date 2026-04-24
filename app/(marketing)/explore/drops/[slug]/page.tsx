@@ -12,7 +12,7 @@ export default function DropPage({ params }: { params: { slug: string } }) {
     notFound();
   }
 
-  const { drop, creator, pieces } = data;
+  const { creator, pieces } = data;
   const profileData = getCreatorProfile(creator.username);
   const otherDrops = profileData?.drops.filter(d => d.id !== data.id).slice(0, 3) || [];
 

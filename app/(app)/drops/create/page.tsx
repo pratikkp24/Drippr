@@ -52,7 +52,7 @@ export default function CreateDropPage() {
   async function handleCreate() {
     if (!title || selectedPieceIds.size === 0) return;
     setLoading(true);
-    
+
     try {
       const res = await fetch("/api/drops/create", {
         method: "POST",
@@ -61,18 +61,31 @@ export default function CreateDropPage() {
           title,
           story,
           pieceIds: Array.from(selectedPieceIds),
-          coverImage: coverImage || (selectedPieceIds.size > 0 ? closetPieces.find(p => p.id === Array.from(selectedPieceIds)[0])?.primaryPhoto : null)
+          coverImage:
+            coverImage ||
+            (selectedPieceIds.size > 0
+              ? closetPieces.find((p) => p.id === Array.from(selectedPieceIds)[0])?.primaryPhoto
+              : null)
         })
       });
-      
+
       if (res.ok) {
-        router.push("/drops");
+        const data = await res.json();
+        if (data.drop?.slug) {
+          router.push(`/drops/${data.drop.slug}`);
+        } else {
+          router.push("/drops");
+        }
       }
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
+  }
+
+  function useSelectedAsCover(url: string) {
+    setCoverImage(url);
   }
 
   return (
@@ -89,7 +102,7 @@ export default function CreateDropPage() {
           disabled={loading || !title || selectedPieceIds.size === 0}
           className="h-[44px] px-xl bg-primary text-bg font-sans font-medium text-[14px] rounded-full hover:bg-primary-hover transition-all disabled:opacity-50"
         >
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Publish Drop"}
+          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Publish drop"}
         </button>
       </header>
 
@@ -97,14 +110,18 @@ export default function CreateDropPage() {
         {/* Left Side: Metadata */}
         <section className="space-y-2xl">
           <div className="space-y-xl">
-             <div className="aspect-[16/9] w-full rounded-2xl bg-surface border border-border flex flex-col items-center justify-center relative overflow-hidden group cursor-pointer">
+             <div className="aspect-[16/9] w-full rounded-2xl bg-surface border border-border flex flex-col items-center justify-center relative overflow-hidden">
               {coverImage ? (
-                <Image src={coverImage} alt="Cover" fill className="object-cover" />
+                <Image src={coverImage} alt="Cover" fill className="object-cover" unoptimized />
               ) : (
-                <>
-                  <Camera className="w-8 h-8 text-text-3 mb-sm group-hover:text-primary transition-colors" />
-                  <p className="font-sans text-[13px] text-text-2">Set cover image</p>
-                </>
+                <div className="text-center px-lg">
+                  <Camera className="w-7 h-7 text-text-3 mb-xs mx-auto" />
+                  <p className="font-sans text-[13px] text-text-2">
+                    {selectedPieceIds.size === 0
+                      ? "Select pieces below — the first one becomes your cover."
+                      : "Tap any piece below to set it as the cover."}
+                  </p>
+                </div>
               )}
             </div>
 
@@ -126,16 +143,28 @@ export default function CreateDropPage() {
           </div>
 
           <div className="space-y-lg">
-            <h3 className="font-sans font-medium text-[12px] text-text-3 uppercase tracking-widest flex items-center">
-              Selected Pieces <span className="ml-2 bg-surface px-2 py-0.5 rounded-full border border-border text-primary">{selectedPieceIds.size}</span>
+            <h3 className="font-sans font-medium text-[11px] text-text-3 uppercase tracking-[2px] flex items-center">
+              Selected pieces <span className="ml-2 bg-surface px-2 py-0.5 rounded-full border border-border text-primary">{selectedPieceIds.size}</span>
             </h3>
             <div className="grid grid-cols-3 gap-md">
-              {closetPieces.filter(p => selectedPieceIds.has(p.id)).map(piece => (
-                <div key={piece.id} className="relative aspect-[3/4] rounded-lg overflow-hidden border border-border group">
-                  <Image src={piece.primaryPhoto} alt={piece.name} fill className="object-cover" />
-                  <button 
+              {closetPieces.filter((p) => selectedPieceIds.has(p.id)).map((piece) => (
+                <div
+                  key={piece.id}
+                  className={`relative aspect-[3/4] rounded-lg overflow-hidden border group ${
+                    coverImage === piece.primaryPhoto ? "border-primary" : "border-border"
+                  }`}
+                >
+                  <Image src={piece.primaryPhoto} alt={piece.name} fill className="object-cover" unoptimized />
+                  <button
+                    onClick={() => useSelectedAsCover(piece.primaryPhoto)}
+                    className="absolute inset-x-1 bottom-1 h-7 rounded bg-black/60 text-white text-[11px] font-medium opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    {coverImage === piece.primaryPhoto ? "Cover" : "Use as cover"}
+                  </button>
+                  <button
                     onClick={() => togglePiece(piece.id)}
-                    className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label="Remove from drop"
                   >
                     <Trash2 className="w-3 h-3" />
                   </button>
@@ -148,7 +177,7 @@ export default function CreateDropPage() {
         {/* Right Side: Pieces Picker */}
         <section className="bg-surface border border-border rounded-2xl flex flex-col h-[calc(100vh-140px)]">
           <div className="p-lg border-b border-border">
-            <h3 className="font-sans font-medium text-[16px] text-text-1">Select from Closet</h3>
+            <h3 className="font-sans font-medium text-[16px] text-text-1">Select from closet</h3>
             <p className="font-sans font-light text-[13px] text-text-3 mt-1">Tap pieces to toggle them in your drop.</p>
           </div>
           
@@ -175,9 +204,11 @@ export default function CreateDropPage() {
                     >
                       <Image src={piece.primaryPhoto} alt={piece.name} fill className="object-cover" />
                       {isSelected && (
-                        <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                          <div className="w-8 h-8 rounded-full bg-primary text-bg flex items-center justify-center">
-                            <Plus className="w-5 h-5 rotate-45" />
+                        <div className="absolute inset-0 bg-primary/25 flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-bg text-primary flex items-center justify-center">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
                           </div>
                         </div>
                       )}

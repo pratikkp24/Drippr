@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { StepIndicator } from "@/components/onboarding/StepIndicator";
 
 const VIBES = [
   { id: "minimal", label: "Minimal", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80" },
@@ -59,6 +60,7 @@ export default function OnboardingTastePage() {
   return (
     <main className="min-h-screen bg-bg flex flex-col items-center py-xl px-lg">
       <div className="w-full max-w-[600px] animate-slideUp">
+        <StepIndicator current="taste" />
         <h1 className="fraunces text-[44px] leading-[1.05] text-text-1 mb-xs">
           Show us your <em className="italic">taste.</em>
         </h1>

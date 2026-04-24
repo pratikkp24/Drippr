@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { StepIndicator } from "@/components/onboarding/StepIndicator";
 
 type Creator = {
   id: string;
@@ -47,16 +48,11 @@ export default function OnboardingFollowPage() {
     });
 
     try {
-      if (!isCurrentlyFollowing) {
-        await fetch("/api/follow", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ targetUserId: creatorId })
-        });
-      } else {
-        // Technically this should hit a DELETE endpoint, but for onboarding dummy state it's fine.
-        // We bypass the actual unfollow call for now since we don't have the API endpoint built yet in phase 2.
-      }
+      await fetch(isCurrentlyFollowing ? "/api/unfollow" : "/api/follow", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetUserId: creatorId })
+      });
     } catch {
       // Revert if failed
       setFollowing(prev => {
@@ -75,6 +71,7 @@ export default function OnboardingFollowPage() {
   return (
     <main className="min-h-screen bg-bg flex flex-col items-center py-xl px-lg">
       <div className="w-full max-w-[480px] animate-slideUp">
+        <StepIndicator current="follow" />
         <h1 className="fraunces text-[44px] leading-[1.05] text-text-1 mb-xs">
           Follow creators who <em className="italic">get</em> you.
         </h1>
@@ -130,8 +127,8 @@ export default function OnboardingFollowPage() {
                   <button
                     onClick={() => toggleFollow(creator.id)}
                     className={`ml-md shrink-0 h-[36px] px-lg rounded-full font-sans font-medium text-[13px] transition-colors border ${
-                      isFollowing 
-                        ? "bg-surface text-text-1 border-border border-transparent" 
+                      isFollowing
+                        ? "bg-surface text-text-1 border-border"
                         : "bg-primary text-bg border-transparent hover:bg-primary-hover"
                     }`}
                   >

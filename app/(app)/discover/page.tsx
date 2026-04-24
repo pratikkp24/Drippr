@@ -3,7 +3,74 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, Check } from "lucide-react";
+
+function DiscoverCard({ item }: { item: any }) {
+  const [added, setAdded] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  async function addToCloset(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (added || busy) return;
+    setBusy(true);
+    const res = await fetch("/api/closet/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: item.name,
+        brand: item.brand,
+        image: item.primaryPhoto,
+        price: item.purchasePrice,
+        sourceUrl: item.sourceUrl,
+        category: item.category
+      })
+    });
+    setBusy(false);
+    if (res.ok) setAdded(true);
+  }
+
+  return (
+    <Link
+      href={`/profile/${item.user.username}`}
+      className="group cursor-pointer"
+    >
+      <div className="relative aspect-[4/5] rounded-2xl overflow-hidden mb-lg shadow-sm">
+        <Image
+          src={item.primaryPhoto}
+          alt={item.name}
+          fill
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          unoptimized
+        />
+        <button
+          onClick={addToCloset}
+          disabled={added || busy}
+          className={`absolute top-md right-md w-[36px] h-[36px] rounded-full backdrop-blur-md flex items-center justify-center shadow-sm transition-all ${
+            added
+              ? "bg-primary text-bg opacity-100"
+              : "bg-white/90 text-text-1 opacity-0 group-hover:opacity-100 hover:bg-white hover:scale-110"
+          }`}
+          aria-label={added ? "Added to closet" : "Add to closet"}
+          title={added ? "Added to your closet" : "Add to your closet"}
+        >
+          {added ? <Check className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+        </button>
+      </div>
+      <div className="flex items-start justify-between px-sm">
+        <div className="space-y-0.5 max-w-[70%]">
+          <h4 className="font-sans font-medium text-[15px] text-text-1 truncate">{item.name}</h4>
+          <p className="font-sans font-light text-[13px] text-text-3 truncate">by @{item.user.username}</p>
+        </div>
+        {item.partner && (
+          <div className="bg-surface border border-border px-1.5 py-0.5 rounded text-[10px] font-bold text-text-3">
+            {item.partner.name.substring(0, 2).toUpperCase()}
+          </div>
+        )}
+      </div>
+    </Link>
+  );
+}
 
 const CATEGORIES = [
   "Minimal", "Street-luxe", "Occasion", "Casual", "Elevated basics", "Workwear", "Travel", "Party"
@@ -80,32 +147,7 @@ export default function DiscoverPage() {
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-xl">
             {pieces.map((item) => (
-              <div key={item.id} className="group cursor-pointer">
-                <div className="relative aspect-[4/5] rounded-2xl overflow-hidden mb-lg shadow-sm">
-                  <Image
-                    src={item.primaryPhoto}
-                    alt={item.name}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    unoptimized
-                  />
-                  <button className="absolute top-md right-md w-[36px] h-[36px] rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-text-1 shadow-sm opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:scale-110">
-                    <Plus className="w-5 h-5" />
-                  </button>
-                </div>
-                
-                <div className="flex items-start justify-between px-sm">
-                  <div className="space-y-0.5 max-w-[70% ]">
-                    <h4 className="font-sans font-medium text-[15px] text-text-1 truncate">{item.name}</h4>
-                    <p className="font-sans font-light text-[13px] text-text-3 truncate">by @{item.user.username}</p>
-                  </div>
-                  {item.partner && (
-                    <div className="bg-surface border border-border px-1.5 py-0.5 rounded text-[10px] font-bold text-text-3">
-                      {item.partner.name.substring(0, 2).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-              </div>
+              <DiscoverCard key={item.id} item={item} />
             ))}
           </div>
         )}

@@ -7,16 +7,32 @@ import Link from "next/link";
 import { Search as SearchIcon, ArrowLeft, Loader2, User, Droplets, Shirt } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 
+type FeaturedCreator = {
+  id: string;
+  displayName: string;
+  username: string;
+  avatarUrl: string | null;
+  styleSignature: string | null;
+};
+
 export default function SearchPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
-  
+
   const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  
+  const [featured, setFeatured] = useState<FeaturedCreator[]>([]);
+
   const debouncedQuery = useDebounce(query, 300);
+
+  useEffect(() => {
+    fetch("/api/onboarding/creators")
+      .then((r) => (r.ok ? r.json() : { creators: [] }))
+      .then((d) => setFeatured(Array.isArray(d.creators) ? d.creators.slice(0, 8) : []))
+      .catch(() => setFeatured([]));
+  }, []);
 
   useEffect(() => {
     async function performSearch() {
@@ -130,7 +146,7 @@ export default function SearchPage() {
                   {results.pieces.map((p: any) => (
                     <Link 
                       key={p.id} 
-                      href={`/closet/piece/${p.id}`} // Dummy link for now
+                      href={`/closet/${p.id}`}
                       className="group"
                     >
                       <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-surface border border-border mb-sm">
@@ -153,9 +169,62 @@ export default function SearchPage() {
         )}
 
         {!query && (
-          <div className="text-center py-2xl space-y-md">
-            <h2 className="fraunces text-text-3 text-[24px]">Find your inspiration.</h2>
-            <p className="font-sans text-text-3 text-[14px]">Search for curators or specific pieces.</p>
+          <div className="space-y-2xl">
+            <div className="text-center space-y-xs pt-md">
+              <h2 className="fraunces text-[28px] text-text-1">
+                Find your <em className="italic">people.</em>
+              </h2>
+              <p className="font-light text-[14px] text-text-2">
+                Search creators by name, @handle, or vibe. Or start with someone below.
+              </p>
+            </div>
+
+            {featured.length > 0 && (
+              <div>
+                <p className="text-[11px] tracking-[2px] uppercase text-text-3 mb-md">Creators to know</p>
+                <div className="grid grid-cols-2 gap-sm">
+                  {featured.map((c) => (
+                    <Link
+                      key={c.id}
+                      href={`/profile/${c.username}`}
+                      className="flex items-center gap-md p-sm bg-surface border border-border rounded-lg hover:border-primary transition-colors"
+                    >
+                      <div className="relative w-11 h-11 rounded-full overflow-hidden shrink-0 bg-border">
+                        <Image
+                          src={c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.displayName)}`}
+                          alt={c.displayName}
+                          fill
+                          sizes="44px"
+                          className="object-cover"
+                          unoptimized
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-[14px] text-text-1 truncate">{c.displayName}</p>
+                        <p className="font-light text-[12px] text-text-3 truncate italic">
+                          {c.styleSignature || `@${c.username}`}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <p className="text-[11px] tracking-[2px] uppercase text-text-3 mb-md">Try a vibe</p>
+              <div className="flex flex-wrap gap-1.5">
+                {["minimal", "monsoon", "streetwear", "occasion", "workwear", "layering", "travel", "festive"].map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => setQuery(v)}
+                    className="px-md h-9 rounded-full text-[13px] font-medium bg-surface border border-border text-text-2 hover:border-accent transition-colors"
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </main>

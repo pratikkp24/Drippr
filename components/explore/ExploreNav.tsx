@@ -14,9 +14,13 @@ export function ExploreNav() {
   ];
 
   return (
-    <header className="h-[72px] bg-bg border-b border-border flex items-center px-lg sm:px-xl sticky top-0 z-50">
-      <div className="flex-1 flex items-center justify-between max-w-[1200px] mx-auto w-full">
-        <Link href="/explore" className="text-[22px] font-semibold text-primary">
+    <header className="h-[64px] sm:h-[72px] bg-bg border-b border-border flex items-center px-md sm:px-lg md:px-xl sticky top-0 z-50">
+      <div className="flex-1 flex items-center justify-between gap-md max-w-[1200px] mx-auto w-full">
+        <Link
+          href="/"
+          className="text-[20px] sm:text-[22px] font-semibold text-primary shrink-0"
+          aria-label="Drippr. home"
+        >
           Drippr.
         </Link>
 
@@ -35,16 +39,16 @@ export function ExploreNav() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-md">
+        <div className="flex items-center gap-sm sm:gap-md shrink-0">
           <Link
             href="/signin"
-            className="text-[14px] text-text-2 hover:text-primary transition-colors hidden sm:block"
+            className="text-[13px] sm:text-[14px] text-text-2 hover:text-primary transition-colors hidden sm:block"
           >
             Sign in
           </Link>
           <Link
             href="/signup"
-            className="h-10 px-lg inline-flex items-center rounded-pill bg-primary text-bg text-[14px] font-medium hover:bg-primary-hover transition-colors"
+            className="h-9 sm:h-10 px-md sm:px-lg inline-flex items-center rounded-pill bg-primary text-bg text-[13px] sm:text-[14px] font-medium hover:bg-primary-hover transition-colors"
           >
             Sign up
           </Link>

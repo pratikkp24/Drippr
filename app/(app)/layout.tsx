@@ -13,6 +13,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getUser } from "@/lib/supabase/server";
 import { SignOutButton } from "./sign-out-button";
+import { QuickLogPill } from "@/components/shared/QuickLogPill";
 
 const NAV_ITEMS = [
   { href: "/home", label: "Home", icon: Home },
@@ -36,9 +37,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen flex bg-bg">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex w-[260px] flex-col bg-surface border-r border-border sticky top-0 h-screen">
-        <div className="px-xl py-2xl text-[24px] font-semibold text-primary tracking-tight">
+        <Link
+          href="/home"
+          className="px-xl py-2xl text-[24px] font-semibold text-primary tracking-tight hover:opacity-80 transition-opacity"
+          aria-label="Drippr. home"
+        >
           Drippr.
-        </div>
+        </Link>
 
         <nav className="flex-1 px-md space-y-xs">
           {NAV_ITEMS.map((item) => (
@@ -98,6 +103,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <main className="flex-1 overflow-y-auto pb-[72px] lg:pb-0">
         {children}
       </main>
+
+      <QuickLogPill />
 
       {/* Mobile Bottom Nav */}
       <nav className="lg:hidden fixed bottom-0 inset-x-0 h-16 bg-surface border-t border-border flex items-center justify-around z-50 px-md">

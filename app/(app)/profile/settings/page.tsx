@@ -106,21 +106,30 @@ export default function SettingsPage() {
                 alt="Profile"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
-                <Camera className="w-6 h-6 text-white" />
-              </div>
             </div>
-            <p className="text-[13px] font-sans text-text-3">Tap to change photo</p>
+            <label className="block w-full max-w-[320px]">
+              <span className="block text-[11px] tracking-[2px] uppercase text-text-3 mb-xs text-center">Avatar URL</span>
+              <input
+                type="url"
+                placeholder="https://…"
+                className="w-full h-10 bg-bg border border-border rounded-md px-sm text-[13px] text-text-1 focus:outline-none focus:border-primary transition-colors placeholder:text-text-3"
+                value={formData.avatarUrl}
+                onChange={(e) => setFormData((prev) => ({ ...prev, avatarUrl: e.target.value }))}
+              />
+              <span className="block text-[11px] font-light text-text-3 mt-xs text-center">
+                Paste any image URL. Direct upload coming soon.
+              </span>
+            </label>
           </section>
 
           {/* Profile Details */}
           <div className="space-y-lg">
-            <h2 className="font-sans font-medium text-[14px] text-text-3 uppercase tracking-widest">Profile Details</h2>
+            <h2 className="font-sans font-medium text-[11px] text-text-3 uppercase tracking-[2px]">Profile details</h2>
             
             <div className="space-y-md">
               <div>
                 <label className="block text-[13px] font-sans font-medium text-text-2 mb-xs flex items-center">
-                  <User className="w-4 h-4 mr-xs" /> Display Name
+                  <User className="w-4 h-4 mr-xs" /> Display name
                 </label>
                 <input
                   type="text"
@@ -161,7 +170,7 @@ export default function SettingsPage() {
 
               <div>
                 <label className="block text-[13px] font-sans font-medium text-text-2 mb-xs flex items-center">
-                  <Sparkles className="w-4 h-4 mr-xs" /> Style Signature
+                  <Sparkles className="w-4 h-4 mr-xs" /> Style signature
                 </label>
                 <input
                   type="text"
@@ -188,21 +197,26 @@ export default function SettingsPage() {
           </div>
 
           {error && <p className="text-[13px] text-error">{error}</p>}
-          {success && <p className="text-[13px] text-success">Profile updated successfully!</p>}
+          {success && <p className="text-[13px] text-success">Saved.</p>}
 
           <button
             type="submit"
             disabled={saving}
             className="w-full h-[54px] bg-primary text-bg font-sans font-medium text-[16px] rounded-md hover:bg-primary-hover transition-colors disabled:opacity-70"
           >
-            {saving ? "Saving Changes..." : "Save Changes"}
+            {saving ? "Saving…" : "Save changes"}
           </button>
         </form>
 
         <div className="mt-2xl pt-2xl border-t border-border">
-          <h2 className="font-sans font-medium text-[14px] text-text-3 uppercase tracking-widest mb-lg text-error">Account Actions</h2>
-          <button 
+          <h2 className="font-sans font-medium text-[11px] text-text-3 uppercase tracking-[2px] mb-lg">Account</h2>
+          <button
             type="button"
+            onClick={async () => {
+              await supabase.auth.signOut();
+              router.push("/");
+              router.refresh();
+            }}
             className="w-full h-[48px] bg-surface text-error border border-error/20 rounded-md font-sans font-medium text-[14px] hover:bg-error/5 transition-colors"
           >
             Sign out

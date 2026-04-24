@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { ArrowRight, Link2, Camera } from "lucide-react";
+import { StepIndicator } from "@/components/onboarding/StepIndicator";
 
 export default function OnboardingClosetSeedPage() {
   return (
     <main className="min-h-screen bg-bg flex flex-col items-center justify-center p-lg sm:p-xl">
       <div className="w-full max-w-[420px] animate-slideUp">
+        <StepIndicator current="closet-seed" />
         <h1 className="fraunces text-[44px] leading-[1.05] text-text-1 mb-sm">
           Start your <em className="italic">closet.</em>
         </h1>
