@@ -7,7 +7,8 @@ import { getUser } from "@/lib/supabase/server";
 import { formatINR } from "@/lib/utils";
 import { ArchiveButton } from "./archive-button";
 
-export default async function PieceDetailPage({ params }: { params: { pieceId: string } }) {
+export default async function PieceDetailPage(props: { params: Promise<{ pieceId: string }> }) {
+  const params = await props.params;
   const user = await getUser();
   if (!user) notFound();
 

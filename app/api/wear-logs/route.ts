@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 // GET /api/wear-logs?from=YYYY-MM-DD&to=YYYY-MM-DD
 export async function GET(req: Request) {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -50,7 +50,7 @@ export async function GET(req: Request) {
 // creates an Outfit (no name) + OutfitPiece rows + one WearLog per piece
 export async function POST(req: Request) {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

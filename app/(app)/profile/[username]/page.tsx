@@ -6,7 +6,8 @@ import prisma from "@/lib/prisma";
 import FollowButton from "./follow-button";
 import ProfileTabs from "./profile-tabs";
 
-export default async function ProfilePage({ params }: { params: { username: string } }) {
+export default async function ProfilePage(props: { params: Promise<{ username: string }> }) {
+  const params = await props.params;
   const { username } = params;
 
   const dbUser = await prisma.user.findUnique({

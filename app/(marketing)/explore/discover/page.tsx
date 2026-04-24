@@ -8,11 +8,12 @@ import NextLink from "next/link";
 const CATEGORIES = ["All", "TOPS", "BOTTOMS", "DRESSES", "OUTERWEAR", "FOOTWEAR", "ACCESSORIES", "BAGS", "JEWELRY"];
 const VIBES = ["All", "minimal", "street-luxe", "workwear", "monsoon", "festive", "travel"];
 
-export default function DiscoverPage({
-  searchParams,
-}: {
-  searchParams: { category?: string; vibe?: string };
-}) {
+export default async function DiscoverPage(
+  props: {
+    searchParams: Promise<{ category?: string; vibe?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const pieces = getDiscoverPieces({
     category: searchParams.category,
     vibeTag: searchParams.vibe,

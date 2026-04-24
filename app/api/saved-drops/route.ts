@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 // POST /api/saved-drops  { dropId, collectionId? }
 export async function POST(req: Request) {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
 // DELETE /api/saved-drops?dropId=<id>
 export async function DELETE(req: Request) {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

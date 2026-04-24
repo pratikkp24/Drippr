@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 // GET /api/outfits/schedule?from=YYYY-MM-DD&to=YYYY-MM-DD
 export async function GET(req: Request) {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -47,7 +47,7 @@ export async function GET(req: Request) {
 // body: { pieceIds: string[], scheduledFor: string (ISO), name?, occasion?, timeOfDay? }
 export async function POST(req: Request) {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -99,7 +99,7 @@ export async function POST(req: Request) {
 // DELETE /api/outfits/schedule?id=<outfitId>
 export async function DELETE(req: Request) {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

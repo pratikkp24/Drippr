@@ -14,7 +14,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ available: false, error: "Username is required" }, { status: 400 });
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {

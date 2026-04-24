@@ -66,7 +66,7 @@ const DUMMY_CREATORS = [
 
 export async function GET(req: Request) {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
