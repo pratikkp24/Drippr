@@ -16,3 +16,4 @@ playwright-report
 client_secret_*.json
 *.pem
 *.key
+.claude/worktrees/
