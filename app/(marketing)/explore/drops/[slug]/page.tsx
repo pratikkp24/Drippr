@@ -12,6 +12,7 @@ export default function DropPage({ params }: { params: { slug: string } }) {
     notFound();
   }
 
+  // data IS the drop, so we just extract creator and pieces
   const { creator, pieces } = data;
   const profileData = getCreatorProfile(creator.username);
   const otherDrops = profileData?.drops.filter(d => d.id !== data.id).slice(0, 3) || [];
