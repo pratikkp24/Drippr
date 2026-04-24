@@ -1,0 +1,326 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  username       String   @unique
+  displayName    String
+  avatarUrl      String?
+  bio            String?
+  styleSignature String?
+  location       String?
+  tasteVibes     String[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  pieces         Piece[]
+  drops          Drop[]
+  outfits        Outfit[]
+  wearLogs       WearLog[]
+  followers      Follow[]        @relation("following")
+  following      Follow[]        @relation("follower")
+  savedDrops     SavedDrop[]
+  collections    Collection[]
+  outboundClicks OutboundClick[]
+  notifications  Notification[]
+
+  @@index([username])
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+  follower    User     @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followingId])
+}
+
+model Piece {
+  id               String     @id @default(uuid())
+  userId           String
+  name             String
+  brand            String?
+  category         Category
+  color            String?
+  size             String?
+  season           Season[]
+  purchasePrice    Decimal?   @db.Decimal(10, 2)
+  purchaseCurrency String     @default("INR")
+  photos           String[]
+  primaryPhoto     String?
+  sourceType       SourceType
+  sourceUrl        String?
+  partnerId        String?
+  partnerProductId String?
+  isPublic         Boolean    @default(false)
+  isArchived       Boolean    @default(false)
+  tags             String[]
+  styleNotes       String?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  partner      Partner?       @relation(fields: [partnerId], references: [id])
+  priceHistory PriceHistory[]
+  wearLogs     WearLog[]
+  outfitPieces OutfitPiece[]
+  dropPieces   DropPiece[]
+
+  @@index([userId])
+  @@index([category])
+  @@index([isPublic])
+}
+
+model Partner {
+  id               String   @id @default(uuid())
+  name             String   @unique
+  slug             String   @unique
+  logoUrl          String
+  domain           String
+  affiliateProgram String
+  active           Boolean  @default(true)
+  commissionRate   Decimal? @db.Decimal(5, 2)
+
+  pieces       Piece[]
+  priceHistory PriceHistory[]
+}
+
+model PriceHistory {
+  id             String   @id @default(uuid())
+  pieceId        String
+  partnerId      String
+  price          Decimal  @db.Decimal(10, 2)
+  currency       String   @default("INR")
+  inStock        Boolean  @default(true)
+  sizesAvailable String[]
+  checkedAt      DateTime @default(now())
+
+  piece   Piece   @relation(fields: [pieceId], references: [id], onDelete: Cascade)
+  partner Partner @relation(fields: [partnerId], references: [id])
+
+  @@index([pieceId, checkedAt])
+}
+
+model Drop {
+  id          String    @id @default(uuid())
+  userId      String
+  slug        String    @unique
+  name        String
+  story       String?
+  coverImage  String
+  dropType    DropType  @default(OPEN)
+  season      Season[]
+  vibeTags    String[]
+  isPublic    Boolean   @default(true)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pieces         DropPiece[]
+  saves          SavedDrop[]
+  outboundClicks OutboundClick[]
+
+  @@index([userId])
+  @@index([slug])
+  @@index([publishedAt])
+}
+
+model DropPiece {
+  id        String  @id @default(uuid())
+  dropId    String
+  pieceId   String
+  order     Int
+  styleNote String?
+
+  drop  Drop  @relation(fields: [dropId], references: [id], onDelete: Cascade)
+  piece Piece @relation(fields: [pieceId], references: [id], onDelete: Cascade)
+
+  @@unique([dropId, pieceId])
+}
+
+model SavedDrop {
+  id           String   @id @default(uuid())
+  userId       String
+  dropId       String
+  collectionId String?
+  createdAt    DateTime @default(now())
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  drop       Drop        @relation(fields: [dropId], references: [id], onDelete: Cascade)
+  collection Collection? @relation(fields: [collectionId], references: [id])
+
+  @@unique([userId, dropId])
+}
+
+model Collection {
+  id        String   @id @default(uuid())
+  userId    String
+  name      String
+  createdAt DateTime @default(now())
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  savedDrops SavedDrop[]
+}
+
+model Outfit {
+  id           String     @id @default(uuid())
+  userId       String
+  name         String?
+  scheduledFor DateTime?
+  occasion     Occasion?
+  timeOfDay    TimeOfDay?
+  createdAt    DateTime   @default(now())
+
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pieces   OutfitPiece[]
+  wearLogs WearLog[]
+
+  @@index([userId, scheduledFor])
+}
+
+model OutfitPiece {
+  id       String @id @default(uuid())
+  outfitId String
+  pieceId  String
+
+  outfit Outfit @relation(fields: [outfitId], references: [id], onDelete: Cascade)
+  piece  Piece  @relation(fields: [pieceId], references: [id], onDelete: Cascade)
+
+  @@unique([outfitId, pieceId])
+}
+
+model WearLog {
+  id        String    @id @default(uuid())
+  userId    String
+  pieceId   String?
+  outfitId  String?
+  wornAt    DateTime  @default(now())
+  occasion  Occasion?
+  feeling   Feeling?
+  notes     String?
+  createdAt DateTime  @default(now())
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  piece  Piece?  @relation(fields: [pieceId], references: [id], onDelete: SetNull)
+  outfit Outfit? @relation(fields: [outfitId], references: [id], onDelete: SetNull)
+
+  @@index([userId, wornAt])
+  @@index([pieceId])
+}
+
+model OutboundClick {
+  id               String   @id @default(uuid())
+  userId           String?
+  pieceId          String?
+  dropId           String?
+  partnerId        String
+  clickedUrl       String
+  sessionId        String
+  userAgent        String?
+  referrer         String?
+  converted        Boolean  @default(false)
+  conversionAmount Decimal? @db.Decimal(10, 2)
+  createdAt        DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  drop Drop? @relation(fields: [dropId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([partnerId, createdAt])
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String?
+  actionUrl String?
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+}
+
+enum Category {
+  TOPS
+  BOTTOMS
+  DRESSES
+  OUTERWEAR
+  FOOTWEAR
+  ACCESSORIES
+  BAGS
+  JEWELRY
+  OTHER
+}
+
+enum Season {
+  SUMMER
+  MONSOON
+  WINTER
+  TRANSITIONAL
+  ALL_SEASON
+}
+
+enum SourceType {
+  AFFILIATE_LINK
+  MANUAL_UPLOAD
+  DRIPPR_CATALOG
+  THRIFTED
+  GIFTED
+  INHERITED
+}
+
+enum DropType {
+  OPEN
+  LIMITED
+  BY_REQUEST
+}
+
+enum Occasion {
+  WORK
+  CASUAL
+  EVENING
+  TRAVEL
+  FORMAL
+  FESTIVE
+  PARTY
+  EVENT
+}
+
+enum TimeOfDay {
+  MORNING
+  AFTERNOON
+  EVENING
+  FULL_DAY
+}
+
+enum Feeling {
+  LOVED
+  FINE
+  WOULDNT_REPEAT
+}
+
+enum NotificationType {
+  NEW_FOLLOWER
+  DROP_SAVED
+  DROP_PUBLISHED_BY_FOLLOWED
+  PIECE_BACK_IN_STOCK
+  PRICE_DROP
+  SYSTEM
+}

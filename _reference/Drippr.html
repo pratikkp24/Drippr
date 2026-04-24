@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Drippr.</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,800;1,9..144,800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:           #F5EFE6;
+  --surface:      #FAF7F1;
+  --primary:      #1F3D2B;
+  --primary-hover:#244733;
+  --accent:       #CBBBA0;
+  --border:       #E6DDCF;
+  --text-1:       #1F3D2B;
+  --text-2:       #6B7C72;
+  --text-3:       #A8B3AA;
+  --success:      #2F6B4A;
+  --warning:      #B88A3B;
+  --error:        #A04A43;
+  --sp-xs:4px; --sp-sm:8px; --sp-md:16px; --sp-lg:24px; --sp-xl:32px; --sp-2xl:40px; --sp-3xl:48px;
+  --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:24px; --r-pill:999px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body,#root{height:100%;background:var(--bg);font-family:'DM Sans','SF Pro Display',-apple-system,sans-serif;color:var(--text-1);overflow:hidden;}
+.app{height:100%;display:flex;overflow:hidden;}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:0;flex-shrink:0;transition:none;}
+.main-content{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--bg);}
+.bottom-nav{display:none;}
+@media(max-width:1024px){
+  .sidebar{display:none;}
+  .bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:0.5px solid var(--border);height:64px;padding-bottom:env(safe-area-inset-bottom);z-index:100;}
+  .main-content{padding-bottom:72px;}
+}
+.screen{animation:screenEnter 240ms ease-out;}
+@keyframes screenEnter{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.splash{background:var(--primary);height:100%;display:flex;align-items:center;justify-content:center;animation:fadeIn 300ms ease-out;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);transition:border-color 180ms ease;cursor:pointer;}
+.card:hover{border-color:var(--accent);}
+.card:active{transform:scale(0.985);transition:transform 120ms ease;}
+.btn-primary{background:var(--primary);color:var(--bg);border:none;height:54px;border-radius:var(--r-md);font-family:'DM Sans',sans-serif;font-weight:500;font-size:15px;cursor:pointer;transition:background 200ms ease;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;}
+.btn-primary:hover{background:var(--primary-hover);}
+.btn-primary:active{transform:scale(0.98);}
+.btn-chip{background:var(--surface);border:1px solid var(--border);color:var(--text-2);height:36px;border-radius:var(--r-pill);padding:0 16px;font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;cursor:pointer;transition:all 180ms ease;white-space:nowrap;display:inline-flex;align-items:center;}
+.btn-chip:hover{border-color:var(--accent);}
+.btn-chip.active{background:var(--primary);border-color:var(--primary);color:var(--bg);}
+.section-label{font-size:12px;font-weight:500;color:var(--text-2);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;}
+.fraunces{font-family:'Fraunces',serif;font-weight:800;font-variation-settings:'opsz' 144;}
+.input-field{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);height:48px;padding:0 16px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text-1);width:100%;outline:none;transition:border-color 200ms;}
+.input-field:focus{border:1.5px solid var(--primary-hover);}
+.input-field::placeholder{color:var(--text-3);}
+.h-scroll{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:2px;}
+.h-scroll::-webkit-scrollbar{display:none;}
+::-webkit-scrollbar{width:0;}
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:var(--primary);color:var(--bg);padding:12px 22px;border-radius:var(--r-md);font-size:14px;font-weight:500;z-index:200;animation:toastIn 220ms ease-out;max-width:300px;text-align:center;white-space:nowrap;}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(8px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+button{font-family:'DM Sans',sans-serif;}
+img{display:block;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+/* ── TWEAKS ─────────────────────────────────────────────────────────────── */
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "mood": "quiet-luxury",
+  "cardEnergy": "editorial",
+  "typeScale": "editorial"
+}/*EDITMODE-END*/;
+
+const MOODS = {
+  'quiet-luxury': {
+    '--bg':'#F5EFE6','--surface':'#FAF7F1','--primary':'#1F3D2B',
+    '--primary-hover':'#244733','--accent':'#CBBBA0','--border':'#E6DDCF',
+    '--text-1':'#1F3D2B','--text-2':'#6B7C72','--text-3':'#A8B3AA',
+    '--splash-bg':'#1F3D2B',
+  },
+  'ink-stone': {
+    '--bg':'#1B2E22','--surface':'#22392B','--primary':'#EFE8DC',
+    '--primary-hover':'#FAF7F1','--accent':'#A8957A','--border':'#3A5244',
+    '--text-1':'#EFE8DC','--text-2':'#8FAA98','--text-3':'#4D6860',
+    '--splash-bg':'#111D16',
+  },
+  'chalk': {
+    '--bg':'#F2F0EC','--surface':'#FAFAF7','--primary':'#141414',
+    '--primary-hover':'#2E2E2E','--accent':'#9A9085','--border':'#E0DDD5',
+    '--text-1':'#141414','--text-2':'#62605A','--text-3':'#ABABAB',
+    '--splash-bg':'#141414',
+  },
+};
+
+const TYPE_MULT = { 'intimate': 0.80, 'editorial': 1, 'grand': 1.28 };
+
+const TweaksCtx = React.createContext({ cardEnergy:'editorial', tm:1 });
+
+/* ── DATA ─────────────────────────────────────────────────────────────── */
+
+const CREATORS = [
+  { id:1, handle:'@maayarora',     name:'Maaya Arora',    drops:14, followers:'3.2k', saves:89,  sig:'Quiet minimalism. Natural textures.',    img:'https://picsum.photos/seed/cr1/200/200' },
+  { id:2, handle:'@priyamalhotra', name:'Priya Malhotra', drops:9,  followers:'2.1k', saves:54,  sig:'Linen lover. Slow fashion advocate.',     img:'https://picsum.photos/seed/cr2/200/200' },
+  { id:3, handle:'@anitaseth',     name:'Anita Seth',     drops:22, followers:'5.8k', saves:201, sig:'Editorial. Structured. Elevated.',        img:'https://picsum.photos/seed/cr3/200/200' },
+  { id:4, handle:'@rhea.k',        name:'Rhea Kapoor',    drops:6,  followers:'1.4k', saves:33,  sig:'Street-luxe meets quiet basics.',         img:'https://picsum.photos/seed/cr4/200/200' },
+];
+
+const PRODUCTS = [
+  { id:1, name:'Handwoven Linen Shirt',    price:4200, img:'https://picsum.photos/seed/p1/400/500',  sizes:['XS','S','M','L'],    colors:['#C8B89A','#8A7B6C','#E8DDD0'] },
+  { id:2, name:'Relaxed Linen Trousers',   price:5800, img:'https://picsum.photos/seed/p2/400/500',  sizes:['S','M','L','XL'],    colors:['#8A7B6C','#D4C4A8','#6B7C72'] },
+  { id:3, name:'Terra Linen Dress',        price:6400, img:'https://picsum.photos/seed/p3/400/500',  sizes:['XS','S','M'],        colors:['#D4C4A8','#C8B89A','#B5A594'] },
+  { id:4, name:'Oversized Cotton Tee',     price:2200, img:'https://picsum.photos/seed/p4/400/500',  sizes:['S','M','L','XL'],    colors:['#E8DDD0','#C8B89A'] },
+  { id:5, name:'Linen Wrap Skirt',         price:3800, img:'https://picsum.photos/seed/p5/400/500',  sizes:['XS','S','M','L'],    colors:['#B5A594','#8A7B6C'] },
+  { id:6, name:'Open Weave Blazer',        price:8900, img:'https://picsum.photos/seed/p6/400/500',  sizes:['S','M','L'],         colors:['#9E8E7E','#6B7C72'] },
+  { id:7, name:'Wide Leg Culottes',        price:4600, img:'https://picsum.photos/seed/p7/400/500',  sizes:['XS','S','M'],        colors:['#C4B5A5','#D4C4A8'] },
+  { id:8, name:'Bralette Top',             price:1800, img:'https://picsum.photos/seed/p8/400/500',  sizes:['XS','S','M','L'],    colors:['#D8CEC0','#C8B89A'] },
+];
+
+const DROPS = [
+  { id:1, title:'The Quiet Season Edit', tagline:'Eight quiet pieces for the in-between season.', creator:CREATORS[0], pieces:12, left:3, products:PRODUCTS.slice(0,8), img:'https://picsum.photos/seed/dr1/600/900', wide:'https://picsum.photos/seed/dr1w/1200/675' },
+  { id:2, title:'The Linen Edit',        tagline:'Breathable, beautiful, built to last.',         creator:CREATORS[1], pieces:8,  left:5, products:PRODUCTS.slice(2,8), img:'https://picsum.photos/seed/dr2/600/900', wide:'https://picsum.photos/seed/dr2w/1200/675' },
+  { id:3, title:'Monsoon Wardrobe',      tagline:'For the grey days that are secretly beautiful.',creator:CREATORS[2], pieces:10, left:2, products:PRODUCTS.slice(1,7), img:'https://picsum.photos/seed/dr3/600/900', wide:'https://picsum.photos/seed/dr3w/1200/675' },
+];
+
+const TRENDING = [
+  { id:101, name:'Ivory Linen Co-ord',    price:5600, img:'https://picsum.photos/seed/tr1/320/420' },
+  { id:102, name:'Structured Tote',        price:3200, img:'https://picsum.photos/seed/tr2/320/390' },
+  { id:103, name:'Slip Midi Dress',        price:4800, img:'https://picsum.photos/seed/tr3/320/440' },
+  { id:104, name:'Wide Brim Hat',          price:2100, img:'https://picsum.photos/seed/tr4/320/370' },
+  { id:105, name:'Woven Mules',            price:3600, img:'https://picsum.photos/seed/tr5/320/410' },
+  { id:106, name:'Printed Scarf',          price:1400, img:'https://picsum.photos/seed/tr6/320/390' },
+  { id:107, name:'Denim Overshirt',        price:4200, img:'https://picsum.photos/seed/tr7/320/430' },
+  { id:108, name:'Knit Cardigan',          price:5100, img:'https://picsum.photos/seed/tr8/320/400' },
+];
+
+/* ── ICONS ────────────────────────────────────────────────────────────── */
+
+const paths = {
+  home:       'M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-5h-4v5H4a1 1 0 01-1-1V9.5z',
+  search:     null,
+  cart:       null,
+  arrow_left: null,
+  chevron_r:  'M9 18l6-6-6-6',
+  chevron_d:  'M6 9l6 6 6-6',
+  heart:      'M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z',
+  user:       null,
+  plus:       null,
+  minus:      'M5 12h14',
+  x:          null,
+  check:      'M20 6L9 17l-5-5',
+  settings:   null,
+  drops:      'M12 2.69l5.66 5.66a8 8 0 11-11.31 0L12 2.69z',
+  compass:    null,
+};
+
+const Ico = ({ n, size=24, color='currentColor', sw=1.5 }) => {
+  const d = {
+    home:      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-5h-4v5H4a1 1 0 01-1-1V9.5z"/>,
+    search:    <><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></>,
+    cart:      <><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></>,
+    arrow_l:   <><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></>,
+    chevron_r: <polyline points="9 18 15 12 9 6"/>,
+    chevron_d: <polyline points="6 9 12 15 18 9"/>,
+    heart:     <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>,
+    user:      <><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></>,
+    compass:   <><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></>,
+    drops:     <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0L12 2.69z"/>,
+    plus:      <><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>,
+    minus:     <line x1="5" y1="12" x2="19" y2="12"/>,
+    x:         <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,
+    check:     <polyline points="20 6 9 17 4 12"/>,
+    save_icon: <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>,
+  };
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}>
+      {d[n]}
+    </svg>
+  );
+};
+
+/* ── TOAST ────────────────────────────────────────────────────────────── */
+
+const Toast = ({ msg, onGone }) => {
+  useEffect(() => { const t = setTimeout(onGone, 2600); return () => clearTimeout(t); }, []);
+  return <div className="toast">{msg}</div>;
+};
+
+/* ── SPLASH ───────────────────────────────────────────────────────────── */
+
+const Splash = ({ onDone }) => {
+  useEffect(() => { const t = setTimeout(onDone, 1600); return () => clearTimeout(t); }, []);
+  return (
+    <div className="splash" style={{width:'100%',height:'100%'}}>
+      <span style={{fontWeight:600,fontSize:38,color:'var(--bg)',letterSpacing:'-0.5px'}}>Drippr.</span>
+    </div>
+  );
+};
+
+/* ── ONBOARDING ───────────────────────────────────────────────────────── */
+
+const SLIDES = [
+  { headline:'Curated fashion,\nexactly your taste.',     sub:'Your feed, shaped by creators who truly get it.',          img:'https://picsum.photos/seed/ob1/700/900' },
+  { headline:'Drops by creators\nwho dress with intention.', sub:'Limited runs. Real curation. No noise.',                img:'https://picsum.photos/seed/ob2/700/900' },
+  { headline:'Save.\nFollow. Collect.',                     sub:'Build your wardrobe wishlist, one drop at a time.',      img:'https://picsum.photos/seed/ob3/700/900' },
+];
+
+const Onboarding = ({ onDone }) => {
+  const [slide, setSlide] = useState(0);
+  const [ts, setTs] = useState(null);
+  const next = () => slide < 2 ? setSlide(s => s+1) : onDone();
+
+  return (
+    <div className="screen" style={{height:'100%',display:'flex',flexDirection:'column',padding:'24px 20px',paddingBottom:'calc(28px + env(safe-area-inset-bottom))',background:'var(--bg)'}}
+      onTouchStart={e => setTs(e.touches[0].clientX)}
+      onTouchEnd={e => { if(ts !== null && ts - e.changedTouches[0].clientX > 60) next(); setTs(null); }}>
+      <div style={{fontWeight:600,fontSize:19,color:'var(--primary)'}}>Drippr.</div>
+      <div style={{flex:1,margin:'20px 0 20px',position:'relative',borderRadius:'var(--r-xl)',overflow:'hidden',border:'1px solid var(--border)'}}>
+        <img src={SLIDES[slide].img} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}} />
+        <div style={{position:'absolute',inset:0,background:'linear-gradient(to top, rgba(31,61,43,0.5) 0%, transparent 50%)'}}/>
+      </div>
+      <div style={{marginBottom:20}}>
+        <h1 className="fraunces" style={{fontSize:'clamp(32px,5vw,46px)',lineHeight:1.1,color:'var(--primary)',marginBottom:10,whiteSpace:'pre-line'}}>{SLIDES[slide].headline}</h1>
+        <p style={{fontSize:16,fontWeight:400,color:'var(--text-2)',lineHeight:1.5}}>{SLIDES[slide].sub}</p>
+      </div>
+      <div style={{display:'flex',gap:6,marginBottom:22}}>
+        {[0,1,2].map(i => (
+          <div key={i} onClick={() => setSlide(i)} style={{width:i===slide?22:8,height:8,borderRadius:'var(--r-pill)',background:i===slide?'var(--primary)':'var(--accent)',transition:'all 300ms ease',cursor:'pointer'}}/>
+        ))}
+      </div>
+      <button className="btn-primary" onClick={next}>{slide < 2 ? 'Continue' : 'Get started'}</button>
+      <button onClick={onDone} style={{background:'none',border:'none',color:'var(--text-2)',fontSize:14,marginTop:14,cursor:'pointer',alignSelf:'center'}}>Continue as guest</button>
+    </div>
+  );
+};
+
+/* ── HOME ─────────────────────────────────────────────────────────────── */
+
+const Home = ({ nav, saved, onSave, onCart }) => {
+  const [dropFilter, setDropFilter] = useState('All');
+  const dFilters = ['All','Tonight','This Week','Selling fast'];
+  const { cardEnergy, tm } = React.useContext(TweaksCtx);
+
+  return (
+    <div className="screen" style={{paddingBottom:32}}>
+      {/* Mobile header */}
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'18px 16px 14px',position:'sticky',top:0,background:'var(--bg)',zIndex:10,borderBottom:'1px solid var(--border)'}}>
+        <span style={{fontWeight:600,fontSize:22,color:'var(--primary)'}}>Drippr.</span>
+        <div style={{display:'flex',gap:16}}>
+          <button style={{background:'none',border:'none',cursor:'pointer'}}><Ico n="search" size={22} color="var(--primary)"/></button>
+          <button style={{background:'none',border:'none',cursor:'pointer'}} onClick={() => nav('cart')}><Ico n="cart" size={22} color="var(--primary)"/></button>
+        </div>
+      </div>
+
+      {/* Featured Drop */}
+      <div style={{margin:'20px 16px 32px'}}>
+        <div className="card" style={{overflow:'hidden',borderRadius:'var(--r-xl)'}} onClick={() => nav('drop', DROPS[0])}>
+          <div style={{position:'relative',aspectRatio:'16/9'}}>
+            <img src={DROPS[0].wide} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+            <div style={{position:'absolute',inset:0,background:'linear-gradient(to top, rgba(31,61,43,0.88) 0%, transparent 55%)'}}/>
+            <div style={{position:'absolute',bottom:20,left:20,right:20}}>
+              <div style={{fontSize:11,fontWeight:600,letterSpacing:'0.15em',textTransform:'uppercase',color:'var(--accent)',marginBottom:6}}>This week's drop</div>
+              <div className="fraunces" style={{fontSize:`clamp(${Math.round(22*tm)}px,3vw,${Math.round(34*tm)}px)`,fontStyle:'italic',color:'var(--bg)',lineHeight:1.1,marginBottom:8}}>{DROPS[0].title}</div>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
+                <div>
+                  <span style={{fontSize:14,color:'var(--accent)'}}>by {DROPS[0].creator.handle}</span>
+                  <span style={{fontSize:13,fontWeight:300,color:'var(--accent)',marginLeft:12}}>{DROPS[0].pieces} pieces · {DROPS[0].left} left</span>
+                </div>
+                <button onClick={e=>{e.stopPropagation();nav('drop',DROPS[0]);}} style={{background:'transparent',border:'1px solid var(--bg)',color:'var(--bg)',borderRadius:'var(--r-pill)',height:34,padding:'0 14px',fontSize:13,fontWeight:500,cursor:'pointer'}}>View Drop →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Creator Picks */}
+      <div style={{marginBottom:32}}>
+        <div className="section-label" style={{padding:'0 16px'}}>Creator Picks</div>
+        <div className="h-scroll" style={{padding:'0 16px'}}>
+          {CREATORS.map(c => (
+            <div key={c.id} className="card" style={{width:160,flexShrink:0,overflow:'hidden'}} onClick={() => nav('creator', c)}>
+              <div style={{height:106,overflow:'hidden'}}>
+                <img src={c.img} alt={c.name} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+              </div>
+              <div style={{padding:'10px 12px'}}>
+                <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:3}}>
+                  <img src={c.img} alt="" style={{width:22,height:22,borderRadius:'50%',objectFit:'cover'}}/>
+                  <span style={{fontSize:14,fontWeight:500}}>{c.name.split(' ')[0]}</span>
+                </div>
+                <span style={{fontSize:12,fontWeight:300,color:'var(--text-3)'}}>{c.drops} drops</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Trending */}
+      <div style={{marginBottom:32}}>
+        <div className="section-label" style={{padding:'0 16px'}}>Trending Now</div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,padding:'0 16px'}}>
+          {TRENDING.slice(0,4).map((item,i) => {
+            const isGallery   = cardEnergy === 'gallery';
+            const isCinematic = cardEnergy === 'cinematic';
+            const overlayStop = isCinematic ? '75%' : '50%';
+            const overlayAlpha = isCinematic ? 0.88 : 0.72;
+            return (
+              <div key={item.id} className="card" style={{overflow:'hidden',position:'relative'}} onClick={() => nav('product', PRODUCTS[i])}>
+                <div style={{aspectRatio:'3/4',position:'relative',overflow:'hidden'}}>
+                  <img src={item.img} alt={item.name} style={{width:'100%',height:'100%',objectFit:'cover',transform:isCinematic?'scale(1.04)':'none',transition:'transform 400ms ease'}}/>
+                  {!isGallery && <div style={{position:'absolute',inset:0,background:`linear-gradient(to top, rgba(31,61,43,${overlayAlpha}) 0%, transparent ${overlayStop})`}}/>}
+                  {!isGallery && (
+                    <div style={{position:'absolute',bottom:10,left:10,right:10}}>
+                      <div style={{fontSize:isCinematic?15:13,fontWeight:isCinematic?600:500,color:'var(--bg)',marginBottom:2,lineHeight:1.2}}>{item.name}</div>
+                      <div style={{fontSize:isCinematic?13:12,fontWeight:300,color:'var(--accent)'}}>₹{item.price.toLocaleString()}</div>
+                    </div>
+                  )}
+                  <button onClick={e=>{e.stopPropagation();onSave(item.id);}} style={{position:'absolute',top:8,right:8,width:32,height:32,borderRadius:'50%',background:'rgba(250,247,241,0.88)',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <Ico n="heart" size={15} color={saved.includes(item.id)?'#A04A43':'var(--text-2)'} sw={saved.includes(item.id)?0:1.5}/>
+                  </button>
+                </div>
+                {isGallery && (
+                  <div style={{padding:'10px 12px 12px'}}>
+                    <div style={{fontSize:13,fontWeight:500,color:'var(--text-1)',marginBottom:2}}>{item.name}</div>
+                    <div style={{fontSize:12,fontWeight:300,color:'var(--text-2)'}}>₹{item.price.toLocaleString()}</div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Limited Drops */}
+      <div style={{marginBottom:32}}>
+        <div className="section-label" style={{padding:'0 16px'}}>Limited Drops</div>
+        <div className="h-scroll" style={{padding:'0 16px',marginBottom:14}}>
+          {dFilters.map(f => <button key={f} className={`btn-chip${dropFilter===f?' active':''}`} onClick={() => setDropFilter(f)}>{f}</button>)}
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,padding:'0 16px'}}>
+          {DROPS.map(drop => (
+            <div key={drop.id} className="card" style={{overflow:'hidden'}} onClick={() => nav('drop', drop)}>
+              <div style={{aspectRatio:'3/4',position:'relative',overflow:'hidden'}}>
+                <img src={drop.img} alt={drop.title} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+                <div style={{position:'absolute',inset:0,background:'linear-gradient(to top, rgba(31,61,43,0.75) 0%, transparent 55%)'}}/>
+                <div style={{position:'absolute',bottom:10,left:10,right:10}}>
+                  <div style={{fontSize:13,fontWeight:500,color:'var(--bg)',marginBottom:2,lineHeight:1.3}}>{drop.title}</div>
+                  <div style={{fontSize:11,fontWeight:300,color:'var(--accent)'}}>{drop.pieces} pieces · <span style={{color:'#E8A89A'}}>{drop.left} left</span></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Seasonal Edit Banner */}
+      <div style={{margin:'0 16px',background:'var(--primary)',borderRadius:'var(--r-xl)',padding:'28px 24px',display:'flex',justifyContent:'space-between',alignItems:'center',cursor:'pointer'}} onClick={() => nav('drop', DROPS[2])}>
+        <div>
+          <div className="fraunces" style={{fontSize:`clamp(${Math.round(22*tm)}px,3vw,${Math.round(36*tm)}px)`,color:'var(--bg)',lineHeight:1.1,marginBottom:16}}>The Monsoon<br/>Wardrobe.</div>
+          <button style={{background:'none',border:'none',color:'var(--accent)',fontSize:14,fontWeight:500,cursor:'pointer',padding:0}}>Shop Edit →</button>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:8}}>
+          {PRODUCTS.slice(0,3).map(p => (
+            <div key={p.id} style={{width:68,height:68,borderRadius:'var(--r-md)',overflow:'hidden',border:'1px solid rgba(255,255,255,0.15)'}}>
+              <img src={p.img} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ── DISCOVER ─────────────────────────────────────────────────────────── */
+
+const Discover = ({ nav, saved, onSave }) => {
+  const [cat, setCat] = useState('Minimal');
+  const cats = ['Minimal','Street-luxe','Occasion','Casual','Elevated basics','Workwear','Travel','Party','Under ₹5k','Under ₹10k','Premium'];
+  const allItems = [...TRENDING, ...TRENDING.map((t,i) => ({...t, id:t.id+200, img:`https://picsum.photos/seed/disc${i+1}/${320}/${360+(i*15)}`}))];
+
+  return (
+    <div className="screen">
+      <div style={{padding:'18px 16px 0',position:'sticky',top:0,background:'var(--bg)',zIndex:10}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
+          <h2 style={{fontSize:22,fontWeight:600,color:'var(--primary)'}}>Discover</h2>
+          <button style={{background:'none',border:'none',cursor:'pointer'}}><Ico n="search" size={22} color="var(--primary)"/></button>
+        </div>
+        <div className="h-scroll" style={{paddingBottom:12,borderBottom:'1px solid var(--border)'}}>
+          {cats.map(c => <button key={c} className={`btn-chip${cat===c?' active':''}`} onClick={() => setCat(c)}>{c}</button>)}
+        </div>
+      </div>
+      <div style={{columns:2,columnGap:10,padding:'12px 16px 24px'}}>
+        {allItems.map((item,i) => (
+          <div key={item.id} style={{breakInside:'avoid',marginBottom:10}}>
+            <div className="card" style={{overflow:'hidden'}} onClick={() => nav('product', PRODUCTS[i % PRODUCTS.length])}>
+              <div style={{position:'relative'}}>
+                <img src={item.img} alt={item.name} style={{width:'100%',display:'block'}}/>
+                <button onClick={e=>{e.stopPropagation();onSave(item.id);}} style={{position:'absolute',top:8,right:8,width:30,height:30,borderRadius:'50%',background:'rgba(250,247,241,0.9)',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                  <Ico n="plus" size={14} color="var(--primary)" sw={2}/>
+                </button>
+              </div>
+              <div style={{padding:'9px 12px 11px'}}>
+                <div style={{fontSize:13,fontWeight:500,color:'var(--text-1)',marginBottom:2}}>{item.name}</div>
+                <div style={{fontSize:12,fontWeight:300,color:'var(--text-2)'}}>₹{item.price.toLocaleString()}</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ── DROPS LIST ───────────────────────────────────────────────────────── */
+
+const DropsScreen = ({ nav }) => (
+  <div className="screen">
+    <div style={{padding:'18px 16px 14px',borderBottom:'1px solid var(--border)'}}>
+      <h2 style={{fontSize:22,fontWeight:600,color:'var(--primary)'}}>Drops</h2>
+    </div>
+    <div style={{display:'flex',flexDirection:'column',gap:14,padding:16}}>
+      {DROPS.map(drop => (
+        <div key={drop.id} className="card" style={{overflow:'hidden',display:'flex'}} onClick={() => nav('drop', drop)}>
+          <div style={{width:120,height:160,flexShrink:0,overflow:'hidden'}}>
+            <img src={drop.img} alt={drop.title} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+          </div>
+          <div style={{flex:1,padding:'16px 16px',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
+            <div>
+              <div style={{fontSize:11,fontWeight:600,letterSpacing:'0.12em',textTransform:'uppercase',color:'var(--accent)',marginBottom:6}}>Drop · {drop.pieces} pieces</div>
+              <div className="fraunces" style={{fontSize:20,lineHeight:1.15,color:'var(--primary)',marginBottom:7}}>{drop.title}</div>
+              <div style={{fontSize:13,fontWeight:300,color:'var(--text-2)',lineHeight:1.5}}>{drop.tagline}</div>
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginTop:12}}>
+              <img src={drop.creator.img} alt="" style={{width:22,height:22,borderRadius:'50%',objectFit:'cover'}}/>
+              <span style={{fontSize:13,color:'var(--text-2)'}}>by {drop.creator.name}</span>
+              <span style={{marginLeft:'auto',fontSize:12,color:'var(--error)',fontWeight:500}}>{drop.left} left</span>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+/* ── SAVED ────────────────────────────────────────────────────────────── */
+
+const Saved = ({ nav, saved }) => {
+  const [col, setCol] = useState('All saves');
+  const cols = ['All saves','For travel','Drop watch','Future buys','Wants'];
+  const items = PRODUCTS.filter(p => saved.includes(p.id));
+
+  return (
+    <div className="screen">
+      <div style={{padding:'18px 16px 0',position:'sticky',top:0,background:'var(--bg)',zIndex:10}}>
+        <h2 style={{fontSize:22,fontWeight:600,color:'var(--primary)',marginBottom:14}}>Saved</h2>
+        <div className="h-scroll" style={{paddingBottom:12,borderBottom:'1px solid var(--border)'}}>
+          {cols.map(c => <button key={c} className={`btn-chip${col===c?' active':''}`} onClick={() => setCol(c)}>{c}</button>)}
+        </div>
+      </div>
+      {items.length === 0 ? (
+        <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'70px 24px',gap:16}}>
+          <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+            <path d="M36 18 C28 18 20 26 20 36 C20 46 28 54 36 54 C44 54 52 46 52 36" stroke="var(--text-3)" strokeWidth="1.5" strokeLinecap="round"/>
+            <line x1="26" y1="54" x2="26" y2="66" stroke="var(--text-3)" strokeWidth="1.5"/>
+            <line x1="46" y1="54" x2="46" y2="66" stroke="var(--text-3)" strokeWidth="1.5"/>
+            <line x1="20" y1="66" x2="52" y2="66" stroke="var(--text-3)" strokeWidth="1.5"/>
+          </svg>
+          <div style={{fontSize:16,fontWeight:400,color:'var(--text-2)'}}>Nothing saved yet.</div>
+          <button className="btn-chip active" onClick={() => nav('tab-discover')}>Start exploring</button>
+        </div>
+      ) : (
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,padding:16}}>
+          {items.map(p => (
+            <div key={p.id} className="card" style={{overflow:'hidden'}} onClick={() => nav('product', p)}>
+              <div style={{aspectRatio:'3/4',overflow:'hidden'}}>
+                <img src={p.img} alt={p.name} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+              </div>
+              <div style={{padding:'10px 12px'}}>
+                <div style={{fontSize:13,fontWeight:500,color:'var(--text-1)',marginBottom:3}}>{p.name}</div>
+                <div style={{fontSize:13,fontWeight:300,color:'var(--primary)'}}>₹{p.price.toLocaleString()}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ── PROFILE ──────────────────────────────────────────────────────────── */
+
+const Profile = () => {
+  const items = ['My orders','Followed creators','Notifications','Size preferences','Account settings'];
+  return (
+    <div className="screen" style={{padding:'18px 16px'}}>
+      <h2 style={{fontSize:22,fontWeight:600,color:'var(--primary)',marginBottom:24}}>Profile</h2>
+      <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:28}}>
+        <div style={{width:64,height:64,borderRadius:'50%',background:'var(--accent)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,fontWeight:600,color:'var(--primary)',flexShrink:0}}>A</div>
+        <div>
+          <div style={{fontSize:18,fontWeight:600,color:'var(--text-1)',marginBottom:3}}>Ananya Singh</div>
+          <div style={{fontSize:14,fontWeight:300,color:'var(--text-2)'}}>ananya@email.com</div>
+        </div>
+      </div>
+      <div style={{background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'var(--r-xl)',overflow:'hidden',marginBottom:24}}>
+        {items.map((item,i) => (
+          <div key={item} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'15px 18px',borderBottom:i<items.length-1?'1px solid var(--border)':'none',cursor:'pointer'}}>
+            <span style={{fontSize:15,color:'var(--text-1)'}}>{item}</span>
+            <Ico n="chevron_r" size={17} color="var(--text-3)"/>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ── DROP DETAIL ──────────────────────────────────────────────────────── */
+
+const DropDetail = ({ drop, nav, onCart }) => {
+  const [expanded, setExpanded] = useState(false);
+  if (!drop) return null;
+  return (
+    <div className="screen" style={{paddingBottom:90}}>
+      <div style={{position:'relative',aspectRatio:'4/5',maxHeight:520}}>
+        <img src={drop.img} alt={drop.title} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+        <div style={{position:'absolute',inset:0,background:'linear-gradient(to top, rgba(31,61,43,0.4) 0%, transparent 60%)'}}/>
+        <button onClick={() => nav('back')} style={{position:'absolute',top:16,left:16,width:40,height:40,borderRadius:'var(--r-pill)',background:'rgba(250,247,241,0.92)',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <Ico n="arrow_l" size={20} color="var(--primary)"/>
+        </button>
+      </div>
+
+      <div style={{padding:'22px 16px 0'}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:14}}>
+          <img src={drop.creator.img} alt="" style={{width:36,height:36,borderRadius:'50%',objectFit:'cover'}}/>
+          <span style={{fontSize:14,color:'var(--text-2)'}}>by {drop.creator.name}</span>
+          <button style={{marginLeft:'auto',background:'transparent',border:'1px solid var(--primary)',color:'var(--primary)',borderRadius:'var(--r-pill)',height:32,padding:'0 16px',fontSize:13,fontWeight:500,cursor:'pointer'}}>Follow</button>
+        </div>
+        <h1 className="fraunces" style={{fontSize:Math.round(30*tm),color:'var(--text-1)',marginBottom:8,lineHeight:1.1}}>{drop.title}</h1>
+        <p style={{fontSize:16,fontWeight:300,color:'var(--text-2)',marginBottom:12,lineHeight:1.5}}>{drop.tagline}</p>
+        <span style={{display:'inline-block',background:'var(--accent)',color:'var(--primary)',borderRadius:'var(--r-pill)',padding:'5px 14px',fontSize:12,fontWeight:500}}>{drop.pieces} pieces · Limited run</span>
+      </div>
+
+      <div style={{padding:'20px 16px 20px',margin:'20px 0 0',borderTop:'1px solid var(--border)',borderBottom:'1px solid var(--border)'}}>
+        <p style={{fontSize:15,fontWeight:400,color:'var(--text-2)',lineHeight:1.7}}>
+          {expanded
+            ? 'Each piece in this drop was sourced and styled with one question: would you wear this on the most beautiful, unremarkable Tuesday of your life? These are not statement pieces. They are the pieces that make getting dressed feel like something to look forward to. Natural linen, relaxed silhouettes, a palette that works with every quality of light.'
+            : 'Each piece in this drop was sourced and styled with one question: would you wear this on the most beautiful, unremarkable Tuesday of your life?'
+          }
+          {' '}
+          <button onClick={() => setExpanded(e=>!e)} style={{background:'none',border:'none',color:'var(--primary)',fontSize:15,fontWeight:500,cursor:'pointer',padding:0}}>{expanded?'Show less':'Read more'}</button>
+        </p>
+      </div>
+
+      <div style={{padding:'22px 16px'}}>
+        <div className="section-label">Items in this drop</div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+          {drop.products.map(prod => (
+            <div key={prod.id} className="card" style={{overflow:'hidden'}} onClick={() => nav('product', prod)}>
+              <div style={{aspectRatio:'1/1',overflow:'hidden'}}>
+                <img src={prod.img} alt={prod.name} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+              </div>
+              <div style={{padding:'10px 12px'}}>
+                <div style={{fontSize:13,fontWeight:500,color:'var(--text-1)',marginBottom:4,lineHeight:1.3}}>{prod.name}</div>
+                <div style={{fontSize:14,fontWeight:600,color:'var(--primary)',marginBottom:8}}>₹{prod.price.toLocaleString()}</div>
+                <div style={{display:'flex',gap:4,flexWrap:'wrap'}}>
+                  {prod.sizes.slice(0,3).map(s => (
+                    <span key={s} style={{background:'var(--bg)',border:'1px solid var(--border)',borderRadius:'var(--r-pill)',padding:'2px 7px',fontSize:11,color:'var(--text-2)'}}>{s}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{position:'fixed',bottom:64,left:0,right:0,background:'var(--surface)',borderTop:'1px solid var(--border)',padding:'12px 16px',display:'flex',gap:12,alignItems:'center',zIndex:50}}>
+        <button className="btn-primary" onClick={() => { drop.products.forEach(p => onCart(p)); nav('back'); }}>Shop this drop</button>
+        <span style={{fontSize:13,fontWeight:300,color:'var(--text-2)',whiteSpace:'nowrap'}}>{drop.pieces} pieces</span>
+      </div>
+    </div>
+  );
+};
+
+/* ── PRODUCT DETAIL ───────────────────────────────────────────────────── */
+
+const ProductDetail = ({ product, nav, onCart, onSave, saved }) => {
+  const [size, setSize] = useState(null);
+  const [colorIdx, setColorIdx] = useState(0);
+  const [openSec, setOpenSec] = useState(null);
+  if (!product) return null;
+  const sections = [
+    { k:'styling', label:'Styling notes', body:'Works beautifully with relaxed trousers or a wrap skirt. Style open over a bralette for evening, or buttoned up for daytime.' },
+    { k:'size', label:'Size guide', body:'We recommend sizing up for a relaxed fit. XS fits 32-34 bust, S fits 34-36, M fits 36-38, L fits 38-40.' },
+    { k:'ship', label:'Shipping & returns', body:'Free shipping above ₹2,000. Delivered in 3-5 working days. 14-day returns on unworn items with tags.' },
+  ];
+  return (
+    <div className="screen" style={{paddingBottom:90}}>
+      <div style={{position:'relative',aspectRatio:'4/5'}}>
+        <img src={product.img} alt={product.name} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+        <button onClick={() => nav('back')} style={{position:'absolute',top:16,left:16,width:40,height:40,borderRadius:'var(--r-pill)',background:'rgba(250,247,241,0.92)',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <Ico n="arrow_l" size={20} color="var(--primary)"/>
+        </button>
+        <div style={{position:'absolute',bottom:14,left:'50%',transform:'translateX(-50%)',display:'flex',gap:6}}>
+          {[0,1,2,3].map(i => <div key={i} style={{width:i===0?18:7,height:7,borderRadius:'var(--r-pill)',background:i===0?'var(--primary)':'var(--accent)',transition:'all 300ms'}}/>)}
+        </div>
+      </div>
+
+      <div style={{padding:'22px 16px'}}>
+        <h1 style={{fontSize:22,fontWeight:600,color:'var(--text-1)',marginBottom:6,lineHeight:1.2}}>{product.name}</h1>
+        <div style={{fontSize:20,fontWeight:300,color:'var(--primary)',marginBottom:22}}>₹{product.price.toLocaleString()}</div>
+
+        <div style={{marginBottom:20}}>
+          <div style={{fontSize:12,color:'var(--text-2)',marginBottom:10}}>Select size</div>
+          <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+            {product.sizes.map(s => (
+              <button key={s} onClick={() => setSize(s)} style={{height:36,minWidth:48,borderRadius:'var(--r-pill)',border:`1px solid ${size===s?'var(--primary)':'var(--border)'}`,background:size===s?'var(--primary)':'var(--surface)',color:size===s?'var(--bg)':'var(--text-1)',fontSize:13,fontWeight:500,cursor:'pointer',padding:'0 14px',transition:'all 180ms ease'}}>{s}</button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{marginBottom:24}}>
+          <div style={{fontSize:12,color:'var(--text-2)',marginBottom:10}}>Color</div>
+          <div style={{display:'flex',gap:10}}>
+            {product.colors.map((c,i) => (
+              <div key={c} onClick={() => setColorIdx(i)} style={{width:28,height:28,borderRadius:'50%',background:c,outline:colorIdx===i?'2px solid var(--primary)':'none',outlineOffset:2,cursor:'pointer',border:'1px solid var(--border)'}}/>
+            ))}
+          </div>
+        </div>
+
+        <button className="btn-primary" style={{marginBottom:12}} onClick={() => { onCart(product); nav('back'); }}>Add to cart</button>
+        <button onClick={() => onSave(product.id)} style={{background:'none',border:'none',color:'var(--text-2)',fontSize:14,cursor:'pointer',display:'flex',alignItems:'center',gap:7,margin:'0 auto',padding:'8px 0'}}>
+          <Ico n="heart" size={16} color={saved.includes(product.id)?'#A04A43':'var(--text-2)'} sw={saved.includes(product.id)?0:1.5}/>
+          {saved.includes(product.id)?'Saved to wishlist':'Save to wishlist'}
+        </button>
+
+        <div style={{marginTop:22}}>
+          {sections.map(sec => (
+            <div key={sec.k} style={{borderBottom:'1px solid var(--border)'}}>
+              <button onClick={() => setOpenSec(openSec===sec.k?null:sec.k)} style={{width:'100%',background:'none',border:'none',padding:'15px 0',display:'flex',justifyContent:'space-between',alignItems:'center',cursor:'pointer',fontSize:15,fontWeight:500,color:'var(--text-1)'}}>
+                {sec.label}
+                <div style={{transform:openSec===sec.k?'rotate(180deg)':'none',transition:'transform 200ms'}}><Ico n="chevron_d" size={17} color="var(--text-2)"/></div>
+              </button>
+              {openSec===sec.k && <div style={{paddingBottom:16,fontSize:14,color:'var(--text-2)',lineHeight:1.65}}>{sec.body}</div>}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{position:'fixed',bottom:64,left:0,right:0,background:'var(--surface)',borderTop:'1px solid var(--border)',padding:'12px 16px',zIndex:50}}>
+        <button className="btn-primary" onClick={() => { onCart(product); nav('back'); }}>Add to cart — ₹{product.price.toLocaleString()}</button>
+      </div>
+    </div>
+  );
+};
+
+/* ── CREATOR PROFILE ──────────────────────────────────────────────────── */
+
+const CreatorProfile = ({ creator, nav }) => {
+  const [tab, setTab] = useState('Drops');
+  if (!creator) return null;
+  return (
+    <div className="screen" style={{paddingBottom:24}}>
+      <div style={{position:'relative',aspectRatio:'21/9',minHeight:180}}>
+        <img src={`https://picsum.photos/seed/cpbg${creator.id}/1200/514`} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+        <div style={{position:'absolute',inset:0,background:'linear-gradient(to top, rgba(31,61,43,0.92) 0%, transparent 50%)'}}/>
+        <button onClick={() => nav('back')} style={{position:'absolute',top:16,left:16,width:40,height:40,borderRadius:'var(--r-pill)',background:'rgba(250,247,241,0.9)',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <Ico n="arrow_l" size={20} color="var(--primary)"/>
+        </button>
+        <div style={{position:'absolute',bottom:0,left:0,right:0,padding:'20px 16px'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end'}}>
+            <div style={{display:'flex',alignItems:'flex-end',gap:12}}>
+              <img src={creator.img} alt="" style={{width:60,height:60,borderRadius:'50%',objectFit:'cover',border:'2px solid var(--bg)',flexShrink:0}}/>
+              <div>
+                <div style={{fontSize:20,fontWeight:600,color:'var(--bg)',marginBottom:2}}>{creator.name}</div>
+                <div style={{fontSize:13,fontStyle:'italic',fontWeight:300,color:'var(--accent)',marginBottom:4}}>{creator.sig}</div>
+                <div style={{fontSize:12,fontWeight:300,color:'var(--accent)'}}>{creator.followers} followers · {creator.drops} drops · {creator.saves} saves</div>
+              </div>
+            </div>
+            <button style={{background:'var(--bg)',color:'var(--primary)',border:'none',borderRadius:'var(--r-pill)',height:34,padding:'0 18px',fontSize:13,fontWeight:500,cursor:'pointer',flexShrink:0}}>Follow</button>
+          </div>
+        </div>
+      </div>
+
+      <div style={{display:'flex',borderBottom:'1px solid var(--border)',padding:'0 16px'}}>
+        {['Drops','Lookbooks','Saves'].map(t => (
+          <button key={t} onClick={() => setTab(t)} style={{background:'none',border:'none',borderBottom:`2px solid ${tab===t?'var(--primary)':'transparent'}`,padding:'13px 16px',fontSize:14,fontWeight:500,color:tab===t?'var(--primary)':'var(--text-3)',cursor:'pointer',marginBottom:-1}}>{t}</button>
+        ))}
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,padding:16}}>
+        {DROPS.map(drop => (
+          <div key={drop.id} className="card" style={{overflow:'hidden'}} onClick={() => nav('drop', drop)}>
+            <div style={{aspectRatio:'3/4',position:'relative',overflow:'hidden'}}>
+              <img src={drop.img} alt={drop.title} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+              <div style={{position:'absolute',inset:0,background:'linear-gradient(to top, rgba(31,61,43,0.72) 0%, transparent 55%)'}}/>
+              <div style={{position:'absolute',bottom:10,left:10,right:10}}>
+                <div style={{fontSize:13,fontWeight:500,color:'var(--bg)',lineHeight:1.3,marginBottom:2}}>{drop.title}</div>
+                <div style={{fontSize:11,fontWeight:300,color:'var(--accent)'}}>{drop.pieces} pieces</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ── CART ─────────────────────────────────────────────────────────────── */
+
+const Cart = ({ items, nav, onUpdate, onRemove }) => {
+  const total = items.reduce((s,i) => s + i.price * i.qty, 0);
+  const shipping = total >= 2000 ? 0 : 150;
+  return (
+    <div className="screen" style={{paddingBottom:90}}>
+      <div style={{padding:'18px 16px 14px',display:'flex',alignItems:'center',gap:12,borderBottom:'1px solid var(--border)'}}>
+        <button onClick={() => nav('back')} style={{background:'none',border:'none',cursor:'pointer'}}><Ico n="arrow_l" size={22} color="var(--primary)"/></button>
+        <h2 style={{fontSize:20,fontWeight:600,color:'var(--primary)'}}>Cart</h2>
+        <span style={{fontSize:13,color:'var(--text-3)',fontWeight:300}}>({items.length} {items.length===1?'item':'items'})</span>
+      </div>
+      {items.length === 0 ? (
+        <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'80px 24px',gap:16}}>
+          <Ico n="cart" size={56} color="var(--text-3)"/>
+          <div style={{fontSize:16,color:'var(--text-2)'}}>Your cart is empty</div>
+          <button className="btn-chip active" onClick={() => nav('back')}>Continue browsing</button>
+        </div>
+      ) : (
+        <>
+          <div>
+            {items.map((item,idx) => (
+              <div key={`${item.id}-${idx}`} style={{display:'flex',gap:14,padding:'14px 16px',borderBottom:'1px solid var(--border)',alignItems:'center'}}>
+                <div style={{width:78,height:78,borderRadius:'var(--r-md)',overflow:'hidden',flexShrink:0}}>
+                  <img src={item.img} alt={item.name} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+                </div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:14,fontWeight:500,color:'var(--text-1)',marginBottom:4,lineHeight:1.3}}>{item.name}</div>
+                  <div style={{fontSize:15,fontWeight:600,color:'var(--primary)'}}>₹{item.price.toLocaleString()}</div>
+                </div>
+                <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:10}}>
+                  <button onClick={() => onRemove(item.id)} style={{background:'none',border:'none',cursor:'pointer'}}><Ico n="x" size={16} color="var(--text-3)"/></button>
+                  <div style={{display:'flex',alignItems:'center',gap:10,background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'var(--r-pill)',padding:'5px 12px'}}>
+                    <button onClick={() => onUpdate(item.id,-1)} style={{background:'none',border:'none',cursor:'pointer',lineHeight:0}}><Ico n="minus" size={13} color="var(--primary)"/></button>
+                    <span style={{fontSize:13,fontWeight:500,minWidth:16,textAlign:'center'}}>{item.qty}</span>
+                    <button onClick={() => onUpdate(item.id,1)} style={{background:'none',border:'none',cursor:'pointer',lineHeight:0}}><Ico n="plus" size={13} color="var(--primary)"/></button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{margin:'22px 16px',background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'var(--r-xl)',padding:20}}>
+            <div style={{display:'flex',justifyContent:'space-between',marginBottom:10}}>
+              <span style={{fontSize:14,color:'var(--text-2)'}}>Subtotal</span>
+              <span style={{fontSize:14,fontWeight:500}}>₹{total.toLocaleString()}</span>
+            </div>
+            <div style={{display:'flex',justifyContent:'space-between',marginBottom:16}}>
+              <span style={{fontSize:14,color:'var(--text-2)'}}>Shipping</span>
+              <span style={{fontSize:14,fontWeight:500,color:shipping===0?'var(--success)':'var(--text-1)'}}>{shipping===0?'Free':'₹'+shipping}</span>
+            </div>
+            <div style={{height:1,background:'var(--border)',marginBottom:16}}/>
+            <div style={{display:'flex',justifyContent:'space-between'}}>
+              <span style={{fontSize:16,fontWeight:600}}>Total</span>
+              <span style={{fontSize:18,fontWeight:600,color:'var(--primary)'}}>₹{(total+shipping).toLocaleString()}</span>
+            </div>
+          </div>
+          <div style={{padding:'0 16px'}}>
+            <button className="btn-primary" onClick={() => nav('checkout')}>Proceed to checkout</button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+/* ── CHECKOUT ─────────────────────────────────────────────────────────── */
+
+const Checkout = ({ nav, cartItems, onComplete }) => {
+  const [step, setStep] = useState(0);
+  const [form, setForm] = useState({name:'',phone:'',address:'',city:'',pin:''});
+  const steps = ['Delivery','Payment','Confirm'];
+  const total = cartItems.reduce((s,i) => s + i.price * i.qty, 0);
+
+  const next = () => {
+    if (step < 2) setStep(s=>s+1);
+    else { onComplete(); nav('home'); }
+  };
+
+  const fields = [['Full name','name','text'],['Phone','phone','tel'],['Address','address','text'],['City','city','text'],['PIN code','pin','number']];
+
+  return (
+    <div className="screen" style={{paddingBottom:90}}>
+      <div style={{padding:'18px 16px 14px',display:'flex',alignItems:'center',gap:12,borderBottom:'1px solid var(--border)'}}>
+        <button onClick={() => step>0?setStep(s=>s-1):nav('back')} style={{background:'none',border:'none',cursor:'pointer'}}><Ico n="arrow_l" size={22} color="var(--primary)"/></button>
+        <h2 style={{fontSize:20,fontWeight:600,color:'var(--primary)'}}>{steps[step]}</h2>
+      </div>
+
+      {/* Progress */}
+      <div style={{padding:'18px 20px',display:'flex',alignItems:'center'}}>
+        {steps.map((s,i) => (
+          <React.Fragment key={s}>
+            <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:5}}>
+              <div style={{width:28,height:28,borderRadius:'50%',background:i<=step?'var(--primary)':'var(--border)',display:'flex',alignItems:'center',justifyContent:'center',transition:'background 300ms'}}>
+                {i<step ? <Ico n="check" size={13} color="var(--bg)"/> : <span style={{fontSize:11,fontWeight:600,color:i<=step?'var(--bg)':'var(--text-3)'}}>{i+1}</span>}
+              </div>
+              <span style={{fontSize:11,color:i<=step?'var(--primary)':'var(--text-3)',fontWeight:500}}>{s}</span>
+            </div>
+            {i<steps.length-1 && <div style={{flex:1,height:2,background:i<step?'var(--primary)':'var(--border)',margin:'0 4px',marginBottom:22,transition:'background 300ms'}}/>}
+          </React.Fragment>
+        ))}
+      </div>
+
+      <div style={{padding:'0 16px'}}>
+        {step===0 && (
+          <div style={{display:'flex',flexDirection:'column',gap:16}}>
+            {fields.map(([label,key,type]) => (
+              <div key={key}>
+                <div style={{fontSize:12,color:'var(--text-2)',marginBottom:6}}>{label}</div>
+                <input className="input-field" type={type} value={form[key]} onChange={e=>setForm(f=>({...f,[key]:e.target.value}))} placeholder={label}/>
+              </div>
+            ))}
+          </div>
+        )}
+        {step===1 && (
+          <div style={{display:'flex',flexDirection:'column',gap:16}}>
+            <div>
+              <div style={{fontSize:12,color:'var(--text-2)',marginBottom:6}}>Card number</div>
+              <input className="input-field" placeholder="1234 5678 9012 3456"/>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              <div>
+                <div style={{fontSize:12,color:'var(--text-2)',marginBottom:6}}>Expiry</div>
+                <input className="input-field" placeholder="MM / YY"/>
+              </div>
+              <div>
+                <div style={{fontSize:12,color:'var(--text-2)',marginBottom:6}}>CVV</div>
+                <input className="input-field" placeholder="•••"/>
+              </div>
+            </div>
+            <div style={{marginTop:4}}>
+              <div style={{fontSize:12,color:'var(--text-2)',marginBottom:10}}>Or pay via</div>
+              <div style={{display:'flex',gap:8}}>
+                {['UPI','Net Banking','Cash on Delivery'].map(o => <button key={o} className="btn-chip">{o}</button>)}
+              </div>
+            </div>
+          </div>
+        )}
+        {step===2 && (
+          <div style={{display:'flex',flexDirection:'column',gap:16}}>
+            <div style={{background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'var(--r-xl)',padding:20}}>
+              <div style={{fontSize:15,fontWeight:600,marginBottom:14}}>Order summary</div>
+              {cartItems.map(p => (
+                <div key={p.id} style={{display:'flex',justifyContent:'space-between',marginBottom:10}}>
+                  <span style={{fontSize:14,color:'var(--text-2)',flex:1,paddingRight:12,lineHeight:1.3}}>{p.name} × {p.qty}</span>
+                  <span style={{fontSize:14,fontWeight:500,flexShrink:0}}>₹{(p.price*p.qty).toLocaleString()}</span>
+                </div>
+              ))}
+              <div style={{height:1,background:'var(--border)',margin:'14px 0'}}/>
+              <div style={{display:'flex',justifyContent:'space-between'}}>
+                <span style={{fontSize:15,fontWeight:600}}>Total</span>
+                <span style={{fontSize:15,fontWeight:600,color:'var(--primary)'}}>₹{total.toLocaleString()}</span>
+              </div>
+            </div>
+            <div style={{background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'var(--r-xl)',padding:20}}>
+              <div style={{fontSize:15,fontWeight:600,marginBottom:10}}>Delivery to</div>
+              <div style={{fontSize:14,color:'var(--text-2)',lineHeight:1.6}}>{form.name||'Ananya Singh'}<br/>{form.address||'12 Saket Road'}, {form.city||'New Delhi'} — {form.pin||'110017'}</div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div style={{position:'fixed',bottom:64,left:0,right:0,padding:'12px 16px',background:'var(--surface)',borderTop:'1px solid var(--border)',zIndex:50}}>
+        <button className="btn-primary" onClick={next}>{step<2?'Continue':'Place order'}</button>
+      </div>
+    </div>
+  );
+};
+
+/* ── NAV ──────────────────────────────────────────────────────────────── */
+
+const tabs = [
+  { id:'home',     label:'Home',     icon:'home'    },
+  { id:'discover', label:'Discover', icon:'compass' },
+  { id:'drops',    label:'Drops',    icon:'drops'   },
+  { id:'saved',    label:'Saved',    icon:'heart'   },
+  { id:'profile',  label:'Profile',  icon:'user'    },
+];
+
+const BottomNav = ({ active, onTab }) => (
+  <div className="bottom-nav">
+    {tabs.map(t => (
+      <button key={t.id} onClick={() => onTab(t.id)} style={{flex:1,background:'none',border:'none',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:3,padding:'6px 0'}}>
+        <Ico n={t.icon} size={24} color={active===t.id?'var(--primary)':'var(--text-3)'} sw={active===t.id?2:1.5}/>
+        {active===t.id && <span style={{fontSize:11,fontWeight:500,color:'var(--primary)'}}>{t.label}</span>}
+      </button>
+    ))}
+  </div>
+);
+
+const Sidebar = ({ active, onTab }) => (
+  <div className="sidebar">
+    <div style={{padding:'32px 28px 28px',fontSize:22,fontWeight:600,color:'var(--primary)'}}>Drippr.</div>
+    <div style={{flex:1}}>
+      {tabs.map(t => (
+        <button key={t.id} onClick={() => onTab(t.id)} style={{width:'100%',background:'none',border:'none',borderLeft:`3px solid ${active===t.id?'var(--primary)':'transparent'}`,cursor:'pointer',display:'flex',alignItems:'center',gap:12,padding:'12px 22px',fontSize:15,fontWeight:active===t.id?500:400,color:active===t.id?'var(--primary)':'var(--text-2)',transition:'all 180ms ease',textAlign:'left'}}>
+          <Ico n={t.icon} size={19} color={active===t.id?'var(--primary)':'var(--text-2)'} sw={active===t.id?2:1.5}/>
+          {t.label}
+        </button>
+      ))}
+    </div>
+    <div style={{padding:'20px 22px',borderTop:'1px solid var(--border)'}}>
+      <div style={{display:'flex',alignItems:'center',gap:10}}>
+        <div style={{width:36,height:36,borderRadius:'50%',background:'var(--accent)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,fontWeight:600,color:'var(--primary)',flexShrink:0}}>A</div>
+        <div>
+          <div style={{fontSize:14,fontWeight:500,color:'var(--text-1)'}}>Ananya</div>
+          <button style={{background:'none',border:'none',fontSize:12,color:'var(--text-3)',cursor:'pointer',padding:0}}>Account settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+/* ── APP ──────────────────────────────────────────────────────────────── */
+
+const App = () => {
+  const [view, setView]     = useState('splash');   // splash | onboard | main | drop | product | creator | cart | checkout
+  const [tab, setTab]       = useState('home');
+  const [stack, setStack]   = useState([]);
+  const [drop, setDrop]     = useState(null);
+  const [product, setProduct] = useState(null);
+  const [creator, setCreator] = useState(null);
+  const [saved, setSaved]   = useState([]);
+  const [cart, setCart]     = useState([]);
+  const [toast, setToast]   = useState(null);
+  const [tweaks, setTweak]  = useTweaks(TWEAK_DEFAULTS);
+
+  // Apply mood palette to CSS vars
+  useEffect(() => {
+    const vars = MOODS[tweaks.mood] || MOODS['quiet-luxury'];
+    Object.entries(vars).forEach(([k,v]) => document.documentElement.style.setProperty(k,v));
+  }, [tweaks.mood]);
+
+  const tm = TYPE_MULT[tweaks.typeScale] || 1;
+  const ctxVal = { cardEnergy: tweaks.cardEnergy, tm };
+
+  const showToast = msg => { setToast(msg); setTimeout(() => setToast(null), 2700); };
+
+  const nav = useCallback((to, data) => {
+    if (to === 'back') {
+      if (stack.length > 0) {
+        const prev = stack[stack.length-1];
+        setStack(s => s.slice(0,-1));
+        setView(prev.view);
+        if (prev.tab) setTab(prev.tab);
+      } else {
+        setView('main');
+      }
+      return;
+    }
+    if (to === 'home') { setView('main'); setTab('home'); setStack([]); return; }
+    if (to === 'tab-discover') { setView('main'); setTab('discover'); setStack([]); return; }
+    if (to === 'cart')     { setStack(s => [...s, {view,tab}]); setView('cart'); return; }
+    if (to === 'checkout') { setStack(s => [...s, {view,tab}]); setView('checkout'); return; }
+    if (to === 'drop')     { setDrop(data); setStack(s => [...s, {view,tab}]); setView('drop'); return; }
+    if (to === 'product')  { setProduct(data); setStack(s => [...s, {view,tab}]); setView('product'); return; }
+    if (to === 'creator')  { setCreator(data); setStack(s => [...s, {view,tab}]); setView('creator'); return; }
+  }, [view, tab, stack]);
+
+  const handleTab = t => { setTab(t); setView('main'); setStack([]); };
+
+  const handleSave = id => {
+    setSaved(s => s.includes(id) ? s.filter(x=>x!==id) : [...s,id]);
+    showToast(saved.includes(id) ? 'Removed from wishlist' : 'Saved to wishlist ♡');
+  };
+
+  const handleCart = p => {
+    setCart(items => {
+      const ex = items.find(i=>i.id===p.id);
+      if (ex) return items.map(i=>i.id===p.id?{...i,qty:i.qty+1}:i);
+      return [...items, {...p, qty:1}];
+    });
+    showToast('Added to cart');
+  };
+
+  const handleQty = (id, d) => setCart(items => items.map(i=>i.id===id?{...i,qty:Math.max(1,i.qty+d)}:i));
+  const handleRemove = id => setCart(items => items.filter(i=>i.id!==id));
+
+  const showNav = !['drop','product','creator','cart','checkout'].includes(view);
+
+  const content = () => {
+    if (view==='splash')   return <Splash onDone={() => setView('onboard')}/>;
+    if (view==='onboard')  return <Onboarding onDone={() => setView('main')}/>;
+    if (view==='drop')     return <DropDetail drop={drop} nav={nav} onCart={handleCart}/>;
+    if (view==='product')  return <ProductDetail product={product} nav={nav} onCart={handleCart} onSave={handleSave} saved={saved}/>;
+    if (view==='creator')  return <CreatorProfile creator={creator} nav={nav}/>;
+    if (view==='cart')     return <Cart items={cart} nav={nav} onUpdate={handleQty} onRemove={handleRemove}/>;
+    if (view==='checkout') return <Checkout nav={nav} cartItems={cart} onComplete={() => { setCart([]); showToast('Order placed! Thank you.'); }}/>;
+    // Tab screens
+    if (tab==='home')     return <Home nav={nav} saved={saved} onSave={handleSave} onCart={handleCart}/>;
+    if (tab==='discover') return <Discover nav={nav} saved={saved} onSave={handleSave}/>;
+    if (tab==='drops')    return <DropsScreen nav={nav}/>;
+    if (tab==='saved')    return <Saved nav={nav} saved={saved}/>;
+    if (tab==='profile')  return <Profile/>;
+  };
+
+  const isRoot = view==='splash'||view==='onboard';
+
+  return (
+    <TweaksCtx.Provider value={ctxVal}>
+      <div className="app">
+        {!isRoot && <Sidebar active={tab} onTab={handleTab}/>}
+        <div className="main-content" key={`${view}-${tab}`}>
+          {content()}
+        </div>
+        {!isRoot && showNav && <BottomNav active={tab} onTab={handleTab}/>}
+        {toast && <Toast msg={toast} onGone={() => setToast(null)}/>}
+      </div>
+      <TweaksPanel>
+        <TweakSection label="Mood"/>
+        <TweakRadio
+          label="Palette"
+          value={tweaks.mood}
+          options={['quiet-luxury','ink-stone','chalk']}
+          labels={['Quiet Luxury','Ink & Stone','Chalk']}
+          onChange={v => setTweak('mood', v)}
+        />
+        <TweakSection label="Card Energy"/>
+        <TweakRadio
+          label="Image framing"
+          value={tweaks.cardEnergy}
+          options={['editorial','gallery','cinematic']}
+          labels={['Editorial','Gallery','Cinematic']}
+          onChange={v => setTweak('cardEnergy', v)}
+        />
+        <TweakSection label="Type Scale"/>
+        <TweakRadio
+          label="Fraunces weight"
+          value={tweaks.typeScale}
+          options={['intimate','editorial','grand']}
+          labels={['Intimate','Editorial','Grand']}
+          onChange={v => setTweak('typeScale', v)}
+        />
+      </TweaksPanel>
+    </TweaksCtx.Provider>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
