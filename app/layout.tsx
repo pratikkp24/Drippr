@@ -17,6 +17,7 @@ const dmSans = DM_Sans({
   display: "swap"
 });
 
+// SECURITY UPDATE: REBUILD TRIGGER 2026-04-25-v3
 export const metadata: Metadata = {
   title: "Drippr.",
   description: "A private fashion club on mobile and web.",
