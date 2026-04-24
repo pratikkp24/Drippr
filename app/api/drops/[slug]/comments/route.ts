@@ -42,7 +42,7 @@ export async function GET(_req: Request, props: { params: Promise<{ slug: string
 export async function POST(req: Request, props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
