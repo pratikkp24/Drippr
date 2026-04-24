@@ -6,10 +6,8 @@ export const dynamic = "force-dynamic";
 
 
 // DELETE /api/user/pieces/[pieceId] — soft archive
-export async function DELETE(
-  _req: Request,
-  { params }: { params: { pieceId: string } }
-) {
+export async function DELETE(_req: Request, props: { params: Promise<{ pieceId: string }> }) {
+  const params = await props.params;
   try {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();

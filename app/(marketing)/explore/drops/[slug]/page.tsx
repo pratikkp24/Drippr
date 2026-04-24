@@ -5,7 +5,8 @@ import { getDropBySlug, getCreatorProfile } from "@/lib/mock";
 import { SignupOverlay } from "@/components/explore/SignupOverlay";
 import { formatINR } from "@/lib/utils";
 
-export default function DropPage({ params }: { params: { slug: string } }) {
+export default async function DropPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const dropData = getDropBySlug(params.slug);
 
   if (!dropData) {

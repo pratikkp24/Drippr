@@ -6,10 +6,8 @@ export const dynamic = "force-dynamic";
 
 
 // DELETE /api/comments/[id] — own comments only
-export async function DELETE(
-  _req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();

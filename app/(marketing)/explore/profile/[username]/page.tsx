@@ -6,13 +6,14 @@ import { SignupOverlay } from "@/components/explore/SignupOverlay";
 import { MapPin, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function ProfilePage({ 
-  params,
-  searchParams 
-}: { 
-  params: { username: string };
-  searchParams: { tab?: string };
-}) {
+export default async function ProfilePage(
+  props: { 
+    params: Promise<{ username: string }>;
+    searchParams: Promise<{ tab?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const data = getCreatorProfile(params.username);
 
   if (!data) {

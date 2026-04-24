@@ -6,10 +6,8 @@ export const dynamic = "force-dynamic";
 
 
 // GET /api/drops/[slug]/comments
-export async function GET(
-  _req: Request,
-  { params }: { params: { slug: string } }
-) {
+export async function GET(_req: Request, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const drop = await prisma.drop.findUnique({
       where: { slug: params.slug },
@@ -41,10 +39,8 @@ export async function GET(
 }
 
 // POST /api/drops/[slug]/comments  body: { body, parentId? }
-export async function POST(
-  req: Request,
-  { params }: { params: { slug: string } }
-) {
+export async function POST(req: Request, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   try {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
