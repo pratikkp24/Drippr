@@ -13,13 +13,16 @@ export default async function LandingPage() {
         loop
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0"
+        className="absolute inset-0 w-full h-full object-cover object-[20%_center] sm:object-center z-0"
       >
         <source src="/hero-bg.mp4" type="video/mp4" />
       </video>
 
       {/* Dark overlay for readability */}
       <div className="absolute inset-0 bg-black/50 z-10" />
+
+      {/* Watermark cover — desktop only */}
+      <div className="hidden sm:block absolute bottom-0 right-0 w-56 h-20 bg-gradient-to-tl from-black/80 to-transparent z-10" />
 
       <header className="relative z-20 px-lg sm:px-xl py-lg flex items-center justify-between">
         <div className="text-[22px] font-semibold text-white">Drippr.</div>
