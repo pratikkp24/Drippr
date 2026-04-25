@@ -47,6 +47,11 @@ export default function LandingPage() {
         disableRemotePlayback
         className="absolute inset-0 w-full h-full object-cover object-[35%_center] sm:object-center z-0"
       >
+        {/* Order matters — browser picks the first source it can play.
+            WebM (615KB, VP9) wins on Chrome / Firefox / Edge / modern Safari 14.1+.
+            MP4 (1.3MB, H.264) is the universal fallback for older Safari and
+            anything weird. */}
+        <source src="/hero-bg.webm" type="video/webm" />
         <source src="/hero-bg.mp4" type="video/mp4" />
       </video>
 
