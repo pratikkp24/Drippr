@@ -24,7 +24,13 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Drippr.",
   description: "A private fashion club on mobile and web.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000")
+  metadataBase: (() => {
+    try {
+      return new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000");
+    } catch {
+      return new URL("http://localhost:3000");
+    }
+  })()
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

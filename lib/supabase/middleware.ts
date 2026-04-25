@@ -19,6 +19,20 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // If Supabase redirected an OAuth error to any page, forward to /auth/callback
+  const oauthError = request.nextUrl.searchParams.get("error");
+  if (oauthError && !request.nextUrl.pathname.startsWith("/auth/callback")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/callback";
+    url.search = "";
+    url.searchParams.set("error", oauthError);
+    const errorCode = request.nextUrl.searchParams.get("error_code");
+    const errorDescription = request.nextUrl.searchParams.get("error_description");
+    if (errorCode) url.searchParams.set("error_code", errorCode);
+    if (errorDescription) url.searchParams.set("error_description", errorDescription);
+    return NextResponse.redirect(url);
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
