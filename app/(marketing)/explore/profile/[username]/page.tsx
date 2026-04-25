@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -5,9 +6,41 @@ import { getCreatorByUsername, getCreatorProfile, MOCK_PIECES } from "@/lib/mock
 import { SignupOverlay } from "@/components/explore/SignupOverlay";
 import { MapPin, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { JsonLd, breadcrumbJsonLd, personJsonLd } from "@/lib/seo/jsonld";
+
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://clubdrippr.com";
+
+export async function generateMetadata(props: {
+  params: Promise<{ username: string }>;
+}): Promise<Metadata> {
+  const { username } = await props.params;
+  const c = getCreatorByUsername(username);
+  if (!c) return { title: "Creator not found" };
+  const url = `${SITE_URL}/explore/profile/${username}`;
+  const ogImage = `${SITE_URL}/api/og/profile/${username}`;
+  return {
+    title: `${c.displayName} (@${c.username})`,
+    description: c.bio || `${c.displayName} on Drippr — ${c.styleSignature}.`,
+    keywords: [c.displayName, c.username, c.styleSignature, c.location, "drippr creator"].filter(Boolean) as string[],
+    alternates: { canonical: `/explore/profile/${username}` },
+    openGraph: {
+      type: "profile",
+      title: `${c.displayName} (@${c.username})`,
+      description: c.bio || `${c.styleSignature} · ${c.location}`,
+      url,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: c.displayName }]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${c.displayName} (@${c.username})`,
+      description: c.bio || c.styleSignature,
+      images: [ogImage]
+    }
+  };
+}
 
 export default async function ProfilePage(
-  props: { 
+  props: {
     params: Promise<{ username: string }>;
     searchParams: Promise<{ tab?: string }>;
   }
@@ -25,6 +58,25 @@ export default async function ProfilePage(
 
   return (
     <div className="animate-screenIn pt-2xl space-y-2xl">
+      <JsonLd
+        data={[
+          personJsonLd({
+            username: creator.username,
+            displayName: creator.displayName,
+            bio: creator.bio,
+            styleSignature: creator.styleSignature,
+            avatarUrl: creator.avatarUrl,
+            location: creator.location,
+            followerCount: creator.followerCount,
+            url: `${SITE_URL}/explore/profile/${creator.username}`
+          }),
+          breadcrumbJsonLd([
+            { name: "Drippr.", url: SITE_URL },
+            { name: "Explore", url: `${SITE_URL}/explore` },
+            { name: `@${creator.username}`, url: `${SITE_URL}/explore/profile/${creator.username}` }
+          ])
+        ]}
+      />
       {/* Header */}
       <header className="flex flex-col md:flex-row gap-xl items-start">
         <div className="relative w-[120px] h-[120px] md:w-[160px] md:h-[160px] rounded-full overflow-hidden border-4 border-surface shadow-sm">

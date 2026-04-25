@@ -1,9 +1,41 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getDropBySlug, getCreatorProfile } from "@/lib/mock";
 import { SignupOverlay } from "@/components/explore/SignupOverlay";
 import { formatINR } from "@/lib/utils";
+import { JsonLd, breadcrumbJsonLd, dropJsonLd } from "@/lib/seo/jsonld";
+
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://clubdrippr.com";
+
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await props.params;
+  const drop = getDropBySlug(slug);
+  if (!drop) return { title: "Drop not found" };
+  const url = `${SITE_URL}/explore/drops/${slug}`;
+  return {
+    title: `${drop.name} · @${drop.creator.username}`,
+    description: drop.story || `A curated drop by @${drop.creator.username} on Drippr.`,
+    keywords: drop.vibeTags,
+    alternates: { canonical: `/explore/drops/${slug}` },
+    openGraph: {
+      type: "article",
+      title: drop.name,
+      description: drop.story || `A curated drop by @${drop.creator.username} on Drippr.`,
+      url,
+      images: [{ url: drop.coverImage, width: 1200, height: 630, alt: drop.name }],
+      publishedTime: new Date(drop.publishedAt).toISOString(),
+      authors: [`${SITE_URL}/explore/profile/${drop.creator.username}`]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: drop.name,
+      description: drop.story || undefined,
+      images: [drop.coverImage]
+    }
+  };
+}
 
 export default async function DropPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
@@ -20,6 +52,36 @@ export default async function DropPage(props: { params: Promise<{ slug: string }
 
   return (
     <div className="animate-screenIn pt-xl space-y-2xl">
+      <JsonLd
+        data={[
+          ...dropJsonLd({
+            slug: dropData.slug,
+            name: dropData.name,
+            story: dropData.story,
+            coverImage: dropData.coverImage,
+            publishedAt: dropData.publishedAt,
+            creator: {
+              username: creator.username,
+              displayName: creator.displayName,
+              avatarUrl: creator.avatarUrl
+            },
+            pieces: pieces.map((p) => ({
+              id: p.id,
+              name: p.name,
+              primaryPhoto: p.primaryPhoto,
+              brand: p.brand,
+              sourceUrl: p.partnerProductUrl,
+              price: p.price
+            })),
+            url: `${SITE_URL}/explore/drops/${dropData.slug}`
+          }),
+          breadcrumbJsonLd([
+            { name: "Drippr.", url: SITE_URL },
+            { name: "Explore", url: `${SITE_URL}/explore` },
+            { name: dropData.name, url: `${SITE_URL}/explore/drops/${dropData.slug}` }
+          ])
+        ]}
+      />
       {/* Hero */}
       <section className="relative aspect-[16/9] w-full max-w-[1200px] rounded-xl overflow-hidden shadow-sm">
         <Image

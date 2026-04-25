@@ -1,0 +1,17 @@
+{
+  "name": "Drippr.",
+  "short_name": "Drippr",
+  "description": "A private fashion club. Curated closets from creators you trust.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F5EFE6",
+  "theme_color": "#1F3D2B",
+  "lang": "en-IN",
+  "categories": ["lifestyle", "shopping", "social"],
+  "icons": [
+    { "src": "/icon", "sizes": "32x32", "type": "image/png" },
+    { "src": "/apple-icon", "sizes": "180x180", "type": "image/png" }
+  ]
+}

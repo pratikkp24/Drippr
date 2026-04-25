@@ -1,9 +1,19 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonld";
+
+export const metadata: Metadata = {
+  title: "A private fashion club",
+  description:
+    "Curated closets from creators you trust. Shop the brands you already love — Myntra, Ajio, Zara, Uniqlo and more. No hauls. No noise. Just real outfits.",
+  alternates: { canonical: "/" }
+};
 
 export default function LandingPage() {
   return (
     <main className="relative min-h-screen flex flex-col overflow-hidden">
+      <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       {/* Static poster — shown on mobile and while video loads */}
       <Image
         src="/hero-poster.jpg"

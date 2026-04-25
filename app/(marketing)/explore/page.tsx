@@ -1,8 +1,21 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { getHomeFeed, MOCK_CREATORS, MOCK_DROPS } from "@/lib/mock";
 import { SignupOverlay } from "@/components/explore/SignupOverlay";
 import { formatINR } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Explore — drops, creators, and pieces",
+  description:
+    "Browse curated drops from real fashion creators. Shop pieces from Myntra, Ajio, Zara, Uniqlo and 50+ more. No account needed to explore.",
+  alternates: { canonical: "/explore" },
+  openGraph: {
+    title: "Explore Drippr — drops, creators, and pieces",
+    description: "Browse curated drops from real fashion creators. No account needed.",
+    url: "/explore"
+  }
+};
 
 export default function ExploreHomePage() {
   const { featuredDrop, creatorPicks } = getHomeFeed();

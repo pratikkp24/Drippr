@@ -1,9 +1,21 @@
-import Link from "next/image";
+import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { getDiscoverPieces } from "@/lib/mock";
 import { SignupOverlay } from "@/components/explore/SignupOverlay";
 import { formatINR, cn } from "@/lib/utils";
-import NextLink from "next/link";
+
+export const metadata: Metadata = {
+  title: "Discover pieces by category and vibe",
+  description:
+    "Browse curated fashion pieces from Indian and global creators. Filter by category, vibe, and brand. Shop directly from Myntra, Ajio, Zara, Uniqlo and more.",
+  alternates: { canonical: "/explore/discover" },
+  openGraph: {
+    title: "Discover pieces — Drippr",
+    description: "Browse curated fashion pieces filtered by vibe and category.",
+    url: "/explore/discover"
+  }
+};
 
 const CATEGORIES = ["All", "TOPS", "BOTTOMS", "DRESSES", "OUTERWEAR", "FOOTWEAR", "ACCESSORIES", "BAGS", "JEWELRY"];
 const VIBES = ["All", "minimal", "street-luxe", "workwear", "monsoon", "festive", "travel"];
@@ -28,7 +40,7 @@ export default async function DiscoverPage(
           {/* Category Chips */}
           <div className="flex flex-wrap gap-sm">
             {CATEGORIES.map((cat) => (
-              <NextLink
+              <Link
                 key={cat}
                 href={{
                   pathname: "/explore/discover",
@@ -42,14 +54,14 @@ export default async function DiscoverPage(
                 )}
               >
                 {cat === "All" ? "All categories" : cat.toLowerCase()}
-              </NextLink>
+              </Link>
             ))}
           </div>
 
           {/* Vibe Chips */}
           <div className="flex flex-wrap gap-sm">
             {VIBES.map((vibe) => (
-              <NextLink
+              <Link
                 key={vibe}
                 href={{
                   pathname: "/explore/discover",
@@ -63,7 +75,7 @@ export default async function DiscoverPage(
                 )}
               >
                 {vibe === "All" ? "All vibes" : vibe}
-              </NextLink>
+              </Link>
             ))}
           </div>
         </div>
@@ -89,12 +101,12 @@ export default async function DiscoverPage(
             </div>
             <div className="space-y-1">
               <h3 className="text-text-1 text-[15px] font-medium line-clamp-1">{piece.name}</h3>
-              <NextLink 
+              <Link 
                 href={`/explore/profile/${piece.creator.username}`}
                 className="text-text-3 text-[13px] hover:text-primary transition-colors inline-block"
               >
                 @{piece.creator.username}
-              </NextLink>
+              </Link>
               <p className="text-primary font-medium text-[14px]">{formatINR(piece.price)}</p>
             </div>
           </div>
