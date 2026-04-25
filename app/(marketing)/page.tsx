@@ -64,16 +64,16 @@ export default async function LandingPage() {
             Curate your closet. Follow creators whose taste you trust. Shop from the brands you
             already love — nothing to haggle over, nothing to install.
           </p>
-          <div className="flex gap-md">
+          <div className="flex flex-col sm:flex-row gap-md">
             <Link
               href="/signup"
-              className="h-[54px] px-xl inline-flex items-center rounded-md bg-white text-primary text-[15px] font-medium hover:bg-white/90 transition-colors"
+              className="h-[54px] px-xl inline-flex items-center justify-center rounded-md bg-white text-primary text-[15px] font-medium hover:bg-white/90 transition-colors"
             >
               Start your closet
             </Link>
             <Link
               href="/explore"
-              className="h-[54px] px-xl inline-flex items-center rounded-md border border-white/30 text-white text-[15px] font-medium hover:border-white/60 transition-colors"
+              className="h-[54px] px-xl inline-flex items-center justify-center rounded-md border border-white/30 text-white text-[15px] font-medium hover:border-white/60 transition-colors"
             >
               Explore first
             </Link>
