@@ -5,8 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 
 export function SignOutButton() {
   const router = useRouter();
-  const supabase = createClient();
   async function onSignOut() {
+    const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/");
     router.refresh();

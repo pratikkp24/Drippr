@@ -8,7 +8,6 @@ import Link from "next/link";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,6 +24,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     async function fetchUser() {
+      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         router.push("/signin");
@@ -46,7 +46,7 @@ export default function SettingsPage() {
       setLoading(false);
     }
     fetchUser();
-  }, [supabase, router]);
+  }, [router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -213,7 +213,7 @@ export default function SettingsPage() {
           <button
             type="button"
             onClick={async () => {
-              await supabase.auth.signOut();
+              await createClient().auth.signOut();
               router.push("/");
               router.refresh();
             }}

@@ -19,7 +19,6 @@ function SignInInner() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get("next") || "/home";
-  const supabase = createClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -31,6 +30,7 @@ function SignInInner() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
@@ -43,6 +43,7 @@ function SignInInner() {
 
   async function signInWithOAuth(provider: "google" | "apple") {
     setError(null);
+    const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
