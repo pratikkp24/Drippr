@@ -196,7 +196,7 @@ export default function SearchPage() {
                           fill
                           sizes="44px"
                           className="object-cover"
-                          unoptimized
+
                         />
                       </div>
                       <div className="min-w-0">

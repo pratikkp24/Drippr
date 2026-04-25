@@ -112,7 +112,7 @@ export default function CreateDropPage() {
           <div className="space-y-xl">
              <div className="aspect-[16/9] w-full rounded-2xl bg-surface border border-border flex flex-col items-center justify-center relative overflow-hidden">
               {coverImage ? (
-                <Image src={coverImage} alt="Cover" fill className="object-cover" unoptimized />
+                <Image src={coverImage} alt="Cover" fill className="object-cover" />
               ) : (
                 <div className="text-center px-lg">
                   <Camera className="w-7 h-7 text-text-3 mb-xs mx-auto" />
@@ -154,7 +154,7 @@ export default function CreateDropPage() {
                     coverImage === piece.primaryPhoto ? "border-primary" : "border-border"
                   }`}
                 >
-                  <Image src={piece.primaryPhoto} alt={piece.name} fill className="object-cover" unoptimized />
+                  <Image src={piece.primaryPhoto} alt={piece.name} fill className="object-cover" />
                   <button
                     onClick={() => useSelectedAsCover(piece.primaryPhoto)}
                     className="absolute inset-x-1 bottom-1 h-7 rounded bg-black/60 text-white text-[11px] font-medium opacity-0 group-hover:opacity-100 transition-opacity"

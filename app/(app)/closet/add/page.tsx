@@ -203,7 +203,7 @@ export default function AddPiecePage() {
             <div className="flex items-start space-x-xl">
               <div className="relative w-48 h-64 rounded-2xl overflow-hidden bg-surface border border-border group">
                 {pieceData.image ? (
-                  <Image src={pieceData.image} alt="Preview" fill className="object-cover" unoptimized />
+                  <Image src={pieceData.image} alt="Preview" fill className="object-cover" />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center p-sm text-center text-[12px] text-text-3">
                     No photo yet.<br />Paste an image URL below.

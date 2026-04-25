@@ -98,7 +98,7 @@ export default async function VibePage(props: { params: Promise<{ tag: string }>
           priority
           sizes="(max-width: 1200px) 100vw, 1200px"
           className="object-cover"
-          unoptimized
+
         />
         <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/30 to-transparent" />
         <div className="absolute bottom-md sm:bottom-lg left-md sm:left-lg right-md sm:right-lg max-w-[760px]">
@@ -147,7 +147,7 @@ export default async function VibePage(props: { params: Promise<{ tag: string }>
                       fill
                       sizes="(max-width: 640px) 100vw, 33vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      unoptimized
+
                     />
                   </div>
                   <h3 className="fraunces text-text-1 text-[20px] leading-tight group-hover:text-primary transition-colors">
@@ -179,7 +179,7 @@ export default async function VibePage(props: { params: Promise<{ tag: string }>
                 className="flex items-center gap-md p-sm bg-surface border border-border rounded-lg hover:border-primary transition-colors"
               >
                 <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0 bg-border">
-                  <Image src={c.avatarUrl} alt={c.displayName} fill sizes="48px" className="object-cover" unoptimized />
+                  <Image src={c.avatarUrl} alt={c.displayName} fill sizes="48px" className="object-cover" />
                 </div>
                 <div className="min-w-0">
                   <p className="font-medium text-[14px] text-text-1 truncate">{c.displayName}</p>

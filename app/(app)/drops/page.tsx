@@ -60,7 +60,7 @@ export default function DropsPage() {
                   fill
                   sizes="180px"
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  unoptimized
+
                 />
               </div>
 

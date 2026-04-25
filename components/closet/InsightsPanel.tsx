@@ -124,7 +124,7 @@ export function InsightsPanel({ monthAnchor }: { monthAnchor: Date }) {
               >
                 <div className="relative aspect-[4/5] rounded-md overflow-hidden bg-bg mb-2">
                   {p.primaryPhoto ? (
-                    <Image src={p.primaryPhoto} alt={p.name} fill className="object-cover" unoptimized />
+                    <Image src={p.primaryPhoto} alt={p.name} fill className="object-cover" />
                   ) : null}
                   <div className="absolute top-1 left-1 bg-primary text-bg text-[10px] font-medium px-1.5 py-0.5 rounded">
                     #{idx + 1}
@@ -186,7 +186,7 @@ export function InsightsPanel({ monthAnchor }: { monthAnchor: Date }) {
                 title={p.name}
               >
                 {p.primaryPhoto ? (
-                  <Image src={p.primaryPhoto} alt={p.name} fill className="object-cover opacity-80 group-hover:opacity-100 transition-opacity" unoptimized />
+                  <Image src={p.primaryPhoto} alt={p.name} fill className="object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                 ) : null}
               </Link>
             ))}

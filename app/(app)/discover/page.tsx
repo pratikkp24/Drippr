@@ -41,7 +41,7 @@ function DiscoverCard({ item }: { item: any }) {
           alt={item.name}
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-105"
-          unoptimized
+
         />
         <button
           onClick={addToCloset}

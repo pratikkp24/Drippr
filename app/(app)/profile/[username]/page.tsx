@@ -114,7 +114,7 @@ export default async function ProfilePage(props: { params: Promise<{ username: s
                   }
                   alt={dbUser.displayName}
                   fill
-                  unoptimized
+
                   className="object-cover"
                 />
               </div>

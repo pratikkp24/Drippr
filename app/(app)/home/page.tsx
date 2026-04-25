@@ -85,18 +85,19 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <header className="h-[72px] sm:h-[80px] flex items-center justify-between px-md sm:px-xl border-b border-border bg-bg/80 backdrop-blur-md sticky top-0 z-20">
-        <h1 className="fraunces text-[28px] font-semibold text-text-1">Home</h1>
-        <Link href="/search">
+      <header className="h-[64px] sm:h-[72px] flex items-center justify-between px-md sm:px-xl border-b border-border bg-bg/80 backdrop-blur-md sticky top-0 z-20">
+        <h1 className="fraunces text-[24px] sm:text-[26px] font-semibold text-text-1">Home</h1>
+        <Link href="/search" aria-label="Search">
           <Search className="w-5 h-5 text-text-3 cursor-pointer hover:text-primary transition-colors" />
         </Link>
       </header>
 
-      <div className="p-md sm:p-xl space-y-xl sm:space-y-2xl max-w-[1200px] mx-auto">
+      <div className="p-md sm:p-lg lg:p-xl space-y-lg lg:space-y-xl max-w-[1200px] mx-auto">
         {!hasRealContent && (
           <div className="bg-surface border border-border rounded-lg px-md py-sm flex items-center justify-between gap-md">
-            <p className="text-[13px] font-light text-text-2">
-              You’re seeing sample drops and creators. <span className="italic">Build your closet</span> to see your feed fill with the real thing.
+            <p className="text-[12px] sm:text-[13px] font-light text-text-2">
+              You’re seeing sample drops and creators.{" "}
+              <span className="italic">Build your closet</span> to see your real feed.
             </p>
             <Link
               href="/closet/add"
@@ -107,66 +108,125 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Featured drop */}
+        {/* Featured drop — split layout on desktop, overlay on mobile */}
         {featuredDrop ? (
           <Link
             href={featuredDrop.href}
-            className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden shadow-2xl group block"
+            className="group block rounded-2xl overflow-hidden bg-surface border border-border shadow-sm"
           >
-            <Image
-              src={featuredDrop.coverImage}
-              alt={featuredDrop.name}
-              fill
-              priority
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-              unoptimized
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            <div className="absolute bottom-xl left-xl right-xl flex items-end justify-between gap-md">
-              <div className="space-y-xs min-w-0">
-                <span className="font-sans font-medium text-[11px] text-white/70 uppercase tracking-[2px]">
-                  {featuredDrop.source === "mock" ? "Editor’s pick" : "This week’s drop"}
+            {/* MOBILE / TABLET: image with text overlay */}
+            <div className="lg:hidden relative aspect-[4/5] sm:aspect-[16/9] w-full">
+              <Image
+                src={featuredDrop.coverImage}
+                alt={featuredDrop.name}
+                fill
+                priority
+                sizes="(max-width: 1200px) 100vw, 720px"
+                className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
+              <div className="absolute bottom-md sm:bottom-lg left-md sm:left-lg right-md sm:right-lg flex flex-wrap items-end justify-between gap-md">
+                <div className="space-y-xs min-w-0 flex-1">
+                  <span className="font-sans font-medium text-[10px] sm:text-[11px] text-white/75 uppercase tracking-[2px]">
+                    {featuredDrop.source === "mock" ? "Editor’s pick" : "This week’s drop"}
+                  </span>
+                  <h2 className="fraunces text-white text-[clamp(28px,5vw,40px)] leading-[1.05] line-clamp-2">
+                    {featuredDrop.name}
+                  </h2>
+                  <p className="font-sans font-light text-white/90 text-[13px] sm:text-[14px]">
+                    by @{featuredDrop.user.username} · {featuredDrop.piecesCount} pieces
+                  </p>
+                </div>
+                <span className="shrink-0 h-10 px-md sm:px-lg border border-white/40 rounded-full bg-white/10 backdrop-blur-md text-white font-medium text-[13px] flex items-center gap-2 group-hover:bg-white group-hover:text-bg transition-all">
+                  View drop <ArrowRight className="w-4 h-4" />
                 </span>
-                <h2 className="fraunces text-white text-[clamp(32px,4vw,44px)] leading-tight truncate">
-                  {featuredDrop.name}
-                </h2>
-                <p className="font-sans font-light text-white/90 text-[15px]">
-                  by @{featuredDrop.user.username} · {featuredDrop.piecesCount} pieces
-                </p>
               </div>
-              <span className="shrink-0 h-[48px] px-xl border border-white/40 rounded-full bg-white/10 backdrop-blur-md text-white font-sans font-medium text-[14px] flex items-center gap-2 group-hover:bg-white group-hover:text-bg transition-all">
-                View drop <ArrowRight className="w-4 h-4" />
-              </span>
+            </div>
+
+            {/* DESKTOP: side-by-side, ~320px tall, no overlay (cleaner type) */}
+            <div className="hidden lg:grid lg:grid-cols-[1.4fr_1fr] h-[320px]">
+              <div className="relative h-full">
+                <Image
+                  src={featuredDrop.coverImage}
+                  alt={featuredDrop.name}
+                  fill
+                  priority
+                  sizes="700px"
+                  className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+
+                />
+              </div>
+              <div className="bg-surface flex flex-col justify-between p-xl">
+                <div>
+                  <span className="font-sans font-medium text-[11px] text-text-3 uppercase tracking-[2px]">
+                    {featuredDrop.source === "mock" ? "Editor’s pick" : "This week’s drop"}
+                  </span>
+                  <h2 className="fraunces text-text-1 text-[40px] leading-[1.05] mt-sm line-clamp-2">
+                    {featuredDrop.name}
+                  </h2>
+                  <p className="font-sans font-light text-text-2 text-[14px] mt-xs">
+                    by @{featuredDrop.user.username} · {featuredDrop.piecesCount} pieces
+                  </p>
+                  {featuredDrop.story && (
+                    <p className="font-sans font-light text-text-3 text-[13px] mt-md italic line-clamp-3">
+                      “{featuredDrop.story}”
+                    </p>
+                  )}
+                </div>
+                <span className="self-start h-11 px-lg rounded-full bg-primary text-bg font-medium text-[14px] inline-flex items-center gap-2 group-hover:bg-primary-hover transition-colors">
+                  View drop <ArrowRight className="w-4 h-4" />
+                </span>
+              </div>
             </div>
           </Link>
         ) : (
-          <div className="aspect-[16/9] w-full rounded-2xl bg-surface border border-dashed border-border flex items-center justify-center text-text-3">
+          <div className="aspect-[16/9] lg:aspect-auto lg:h-[320px] w-full rounded-2xl bg-surface border border-dashed border-border flex items-center justify-center text-text-3">
             No featured drops yet.
           </div>
         )}
 
-        {/* Creators to know */}
-        {creatorsToKnow.length > 0 && (
-          <section className="space-y-lg">
-            <div className="flex items-end justify-between">
-              <h3 className="font-sans font-medium text-[11px] text-text-3 uppercase tracking-[2px]">
-                Creators to know
-              </h3>
-              <Link
-                href="/search"
-                className="text-[12px] text-text-2 hover:text-primary underline-offset-4 hover:underline"
-              >
-                See all
-              </Link>
+        {/* Trending drops — moved up so desktop sees content denser above the fold */}
+        {trendingDrops.length > 0 && (
+          <section className="space-y-md lg:space-y-lg">
+            <SectionHeader title="Trending drops" link={{ label: "See all", href: "/drops" }} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-md lg:gap-lg">
+              {trendingDrops.map((d) => (
+                <Link key={d.id} href={d.href} className="group">
+                  <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-sm bg-surface border border-border mb-sm">
+                    <Image
+                      src={d.coverImage}
+                      alt={d.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+
+                    />
+                  </div>
+                  <h4 className="fraunces text-text-1 text-[18px] sm:text-[20px] leading-tight group-hover:text-primary transition-colors line-clamp-1">
+                    {d.name}
+                  </h4>
+                  <p className="font-light text-[12px] text-text-3 truncate">
+                    by @{d.user.username} · {d.piecesCount} {d.piecesCount === 1 ? "piece" : "pieces"}
+                  </p>
+                </Link>
+              ))}
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-md">
+          </section>
+        )}
+
+        {/* Creators to know — horizontal scroll on mobile, 4-col grid on desktop */}
+        {creatorsToKnow.length > 0 && (
+          <section className="space-y-md lg:space-y-lg">
+            <SectionHeader title="Creators to know" link={{ label: "See all", href: "/search" }} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-sm lg:gap-md">
               {creatorsToKnow.slice(0, 8).map((c) => (
                 <Link
                   key={c.username}
                   href={c.href}
                   className="flex items-center gap-md p-sm bg-surface border border-border rounded-lg hover:border-primary transition-colors"
                 >
-                  <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0 bg-border">
+                  <div className="relative w-11 h-11 rounded-full overflow-hidden shrink-0 bg-border">
                     <Image
                       src={
                         c.avatarUrl ||
@@ -174,9 +234,9 @@ export default function HomePage() {
                       }
                       alt={c.displayName}
                       fill
-                      sizes="48px"
+                      sizes="44px"
                       className="object-cover"
-                      unoptimized
+
                     />
                   </div>
                   <div className="min-w-0">
@@ -194,70 +254,29 @@ export default function HomePage() {
           </section>
         )}
 
-        {/* Trending drops */}
-        {trendingDrops.length > 0 && (
-          <section className="space-y-lg">
-            <div className="flex items-end justify-between">
-              <h3 className="font-sans font-medium text-[11px] text-text-3 uppercase tracking-[2px]">
-                Trending drops
-              </h3>
-              <Link
-                href="/drops"
-                className="text-[12px] text-text-2 hover:text-primary underline-offset-4 hover:underline"
-              >
-                See all
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
-              {trendingDrops.map((d) => (
-                <Link key={d.id} href={d.href} className="group">
-                  <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-sm bg-surface border border-border mb-sm">
-                    <Image
-                      src={d.coverImage}
-                      alt={d.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      unoptimized
-                    />
-                  </div>
-                  <h4 className="fraunces text-text-1 text-[20px] leading-tight group-hover:text-primary transition-colors">
-                    {d.name}
-                  </h4>
-                  <p className="font-light text-[12px] text-text-3 truncate">
-                    by @{d.user.username} · {d.piecesCount} {d.piecesCount === 1 ? "piece" : "pieces"}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Creator picks */}
+        {/* Creator picks — 4-col grid (was 4-col, kept the same) */}
         {creatorPicks.length > 0 && (
-          <section className="space-y-lg">
-            <h3 className="font-sans font-medium text-[11px] text-text-3 uppercase tracking-[2px]">
-              Creator picks
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-lg">
+          <section className="space-y-md lg:space-y-lg">
+            <SectionHeader title="Creator picks" />
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-md lg:gap-lg">
               {creatorPicks.map((pick) => (
                 <Link key={pick.id} href={pick.href} className="group">
-                  <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-md shadow-sm bg-surface">
+                  <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-sm shadow-sm bg-surface">
                     {pick.primaryPhoto ? (
                       <Image
                         src={pick.primaryPhoto}
                         alt={pick.name}
                         fill
-                        sizes="(max-width: 768px) 50vw, 25vw"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        unoptimized
+
                       />
                     ) : null}
                   </div>
-                  <h4 className="font-sans font-medium text-[15px] text-text-1 group-hover:text-primary transition-colors truncate">
+                  <h4 className="font-sans font-medium text-[14px] sm:text-[15px] text-text-1 group-hover:text-primary transition-colors truncate">
                     {pick.name}
                   </h4>
-                  <p className="font-sans font-light text-[13px] text-text-3 truncate">
+                  <p className="font-sans font-light text-[12px] sm:text-[13px] text-text-3 truncate">
                     @{pick.user.username}
                   </p>
                 </Link>
@@ -266,6 +285,30 @@ export default function HomePage() {
           </section>
         )}
       </div>
+    </div>
+  );
+}
+
+function SectionHeader({
+  title,
+  link
+}: {
+  title: string;
+  link?: { label: string; href: string };
+}) {
+  return (
+    <div className="flex items-end justify-between">
+      <h3 className="font-sans font-medium text-[11px] text-text-3 uppercase tracking-[2px]">
+        {title}
+      </h3>
+      {link && (
+        <Link
+          href={link.href}
+          className="text-[12px] text-text-2 hover:text-primary underline-offset-4 hover:underline"
+        >
+          {link.label}
+        </Link>
+      )}
     </div>
   );
 }

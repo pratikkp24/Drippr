@@ -93,7 +93,7 @@ export default async function DropDetailsPage(props: { params: Promise<{ slug: s
           fill
           priority
           className="object-cover"
-          unoptimized
+
         />
         <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-black/30" />
         <div className="absolute bottom-0 inset-x-0 p-md sm:p-xl flex flex-col items-center text-center">
@@ -114,7 +114,7 @@ export default async function DropDetailsPage(props: { params: Promise<{ slug: s
                 fill
                 sizes="40px"
                 className="object-cover"
-                unoptimized
+
               />
             </div>
             <span className="font-sans font-light text-text-2 text-[15px] sm:text-[16px]">
@@ -153,7 +153,7 @@ export default async function DropDetailsPage(props: { params: Promise<{ slug: s
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  unoptimized
+
                 />
                 {item.piece.sourceUrl && (
                   <div className="absolute bottom-md right-md opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all">

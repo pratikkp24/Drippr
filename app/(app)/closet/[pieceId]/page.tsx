@@ -45,7 +45,7 @@ export default async function PieceDetailPage(props: { params: Promise<{ pieceId
       <div className="max-w-[1000px] mx-auto p-xl grid md:grid-cols-2 gap-xl">
         <div className="relative aspect-[4/5] rounded-xl overflow-hidden bg-surface border border-border">
           {piece.primaryPhoto ? (
-            <Image src={piece.primaryPhoto} alt={piece.name} fill className="object-cover" unoptimized />
+            <Image src={piece.primaryPhoto} alt={piece.name} fill className="object-cover" />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-text-3 text-sm">
               No photo

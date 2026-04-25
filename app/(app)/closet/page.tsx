@@ -191,7 +191,7 @@ export default function ClosetPage() {
                       fill
                       sizes="(max-width: 768px) 50vw, 25vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      unoptimized
+
                     />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center text-text-3 text-[12px]">

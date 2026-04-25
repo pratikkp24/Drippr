@@ -401,7 +401,7 @@ function OutfitCard({
             className="relative w-12 h-12 rounded bg-bg overflow-hidden border border-border"
           >
             {p.primaryPhoto ? (
-              <Image src={p.primaryPhoto} alt={p.name} fill className="object-cover" unoptimized />
+              <Image src={p.primaryPhoto} alt={p.name} fill className="object-cover" />
             ) : null}
           </div>
         ))}
@@ -497,7 +497,7 @@ function PiecePickerSheet({
                       }`}
                     >
                       {p.primaryPhoto ? (
-                        <Image src={p.primaryPhoto} alt={p.name} fill className="object-cover" unoptimized />
+                        <Image src={p.primaryPhoto} alt={p.name} fill className="object-cover" />
                       ) : (
                         <div className="absolute inset-0 bg-surface flex items-center justify-center text-[10px] text-text-3">
                           No photo

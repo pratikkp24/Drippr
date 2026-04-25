@@ -87,7 +87,7 @@ export default function ProfileTabs({
                         fill
                         sizes="(max-width:768px) 50vw, 25vw"
                         className={`object-cover transition-transform duration-500 ${isOwnProfile ? "group-hover:scale-105" : ""}`}
-                        unoptimized
+
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center text-text-3 text-[12px]">
@@ -127,7 +127,7 @@ export default function ProfileTabs({
                       alt={d.name}
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      unoptimized
+
                     />
                   </div>
                   <h3 className="fraunces text-text-1 text-[20px]">{d.name}</h3>
@@ -198,7 +198,7 @@ function DropsGrid({
               alt={d.name}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
-              unoptimized
+
             />
           </div>
           <h3 className="fraunces text-text-1 text-[20px]">{d.name}</h3>

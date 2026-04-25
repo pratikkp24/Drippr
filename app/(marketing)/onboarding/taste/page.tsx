@@ -84,7 +84,7 @@ export default function OnboardingTastePage() {
                   fill
                   sizes="(max-width: 768px) 33vw, 200px"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  unoptimized
+
                 />
                 
                 {/* Always-visible overlay for the text */}

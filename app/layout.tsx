@@ -5,19 +5,25 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
+// Trimmed font payload (was 6 files, now 4) — Fraunces only ships 800 italic
+// because that's the only style we use. DM Sans drops 600 (unused).
 const fraunces = Fraunces({
   subsets: ["latin"],
-  weight: ["400", "800"],
-  style: ["normal", "italic"],
+  weight: ["800"],
+  style: ["italic", "normal"],
   variable: "--font-fraunces",
-  display: "swap"
+  display: "swap",
+  preload: true,
+  fallback: ["Georgia", "serif"]
 });
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400", "500"],
   variable: "--font-dm-sans",
-  display: "swap"
+  display: "swap",
+  preload: true,
+  fallback: ["system-ui", "-apple-system", "Segoe UI", "sans-serif"]
 });
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://clubdrippr.com";

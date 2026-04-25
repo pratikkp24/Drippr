@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonld";
 
 export const metadata: Metadata = {
@@ -14,25 +13,39 @@ export default function LandingPage() {
   return (
     <main className="relative min-h-screen flex flex-col overflow-hidden">
       <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
-      {/* Static poster — shown on mobile and while video loads */}
-      <Image
+
+      {/*
+        Hero strategy:
+        - <Image> poster is the LCP element (priority + fetchPriority high)
+        - <video> overlays it, preload="none" so it doesn't compete for bytes
+          before the poster paints. The video then starts downloading + autoplaying
+          once the page is interactive.
+        - On mobile, video may not autoplay until user interacts (data-saver, low-power),
+          but the poster is identical so the page looks complete either way.
+      */}
+      <img
         src="/hero-poster.jpg"
         alt=""
         aria-hidden="true"
-        fill
-        priority
-        sizes="(max-width: 639px) 100vw, 1px"
-        className="object-cover object-[20%_center] z-0 sm:hidden"
+        // eslint-disable-next-line @next/next/no-img-element
+        fetchPriority="high"
+        decoding="async"
+        className="absolute inset-0 w-full h-full object-cover object-[35%_center] sm:object-center z-0"
       />
-
-      {/* Full-bleed video background — desktop only */}
       <video
         autoPlay
         loop
         muted
         playsInline
+        preload="none"
         poster="/hero-poster.jpg"
-        className="absolute inset-0 w-full h-full object-cover object-center z-0 hidden sm:block"
+        // eslint-disable-next-line react/no-unknown-property
+        x-webkit-airplay="deny"
+        // eslint-disable-next-line react/no-unknown-property
+        disablePictureInPicture
+        // eslint-disable-next-line react/no-unknown-property
+        disableRemotePlayback
+        className="absolute inset-0 w-full h-full object-cover object-[35%_center] sm:object-center z-0"
       >
         <source src="/hero-bg.mp4" type="video/mp4" />
       </video>
