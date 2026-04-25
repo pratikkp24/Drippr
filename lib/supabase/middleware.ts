@@ -7,6 +7,18 @@ const AUTH_ROUTES = ["/signin", "/signup"];
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
+  // If Supabase redirected to any page with ?code=, forward to /auth/callback
+  const code = request.nextUrl.searchParams.get("code");
+  if (code && !request.nextUrl.pathname.startsWith("/auth/callback")) {
+    const url = request.nextUrl.clone();
+    const next = url.pathname === "/" ? "/home" : url.pathname;
+    url.pathname = "/auth/callback";
+    url.search = "";
+    url.searchParams.set("code", code);
+    url.searchParams.set("next", next);
+    return NextResponse.redirect(url);
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
