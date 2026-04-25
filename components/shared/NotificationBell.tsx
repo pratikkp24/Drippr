@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Bell } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -32,7 +32,16 @@ export function NotificationBell({ userId }: { userId: string }) {
   const [items, setItems] = useState<Notif[]>([]);
   const [unread, setUnread] = useState(0);
   const panelRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
+  // Memoized + lazy: only constructed in the browser, never during SSR
+  const supabase = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      return createClient();
+    } catch (err) {
+      console.error("[NotificationBell] failed to init supabase client:", err);
+      return null;
+    }
+  }, []);
 
   async function load() {
     try {
@@ -49,6 +58,7 @@ export function NotificationBell({ userId }: { userId: string }) {
 
   useEffect(() => {
     load();
+    if (!supabase) return;
 
     // Realtime — react to INSERTs on this user's notifications
     const channel = supabase
@@ -69,7 +79,7 @@ export function NotificationBell({ userId }: { userId: string }) {
       supabase.removeChannel(channel);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, [userId, supabase]);
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {

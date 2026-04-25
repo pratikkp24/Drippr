@@ -6,90 +6,99 @@ import prisma from "@/lib/prisma";
 import FollowButton from "./follow-button";
 import ProfileTabs from "./profile-tabs";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProfilePage(props: { params: Promise<{ username: string }> }) {
   const params = await props.params;
   const { username } = params;
 
-  const dbUser = await prisma.user.findUnique({
-    where: { username },
-    include: {
-      _count: {
-        select: { followers: true, following: true, drops: true, savedDrops: true, pieces: true }
-      }
-    }
-  });
-
-  if (!dbUser) notFound();
-
-  const authUser = await getUser();
-  const isOwnProfile = authUser?.id === dbUser.id;
-
-  let isFollowing = false;
-  if (authUser && !isOwnProfile) {
-    const follow = await prisma.follow.findUnique({
-      where: {
-        followerId_followingId: {
-          followerId: authUser.id,
-          followingId: dbUser.id
+  let dbUser;
+  try {
+    dbUser = await prisma.user.findUnique({
+      where: { username },
+      include: {
+        _count: {
+          select: { followers: true, following: true, drops: true, savedDrops: true, pieces: true }
         }
       }
     });
-    isFollowing = !!follow;
+  } catch (err) {
+    console.error("[/profile/" + username + "] dbUser lookup failed:", err);
+    throw err; // bubble to error.tsx
   }
 
-  // Drops — published only for non-owners; all for self
-  const drops = await prisma.drop.findMany({
-    where: {
-      userId: dbUser.id,
-      ...(isOwnProfile ? {} : { publishedAt: { not: null }, isPublic: true })
-    },
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      slug: true,
-      name: true,
-      coverImage: true,
-      _count: { select: { pieces: true } }
-    }
-  });
+  if (!dbUser) notFound();
 
-  // Closet — own profile sees everything; others see public + non-archived
-  const closetPieces = await prisma.piece.findMany({
-    where: {
-      userId: dbUser.id,
-      isArchived: false,
-      ...(isOwnProfile ? {} : { isPublic: true })
-    },
-    orderBy: { createdAt: "desc" },
-    take: 60,
-    select: {
-      id: true,
-      name: true,
-      primaryPhoto: true,
-      category: true,
-      brand: true
-    }
-  });
+  const authUser = await getUser().catch(() => null);
+  const isOwnProfile = authUser?.id === dbUser.id;
 
-  // Saved drops — only visible on own profile (privacy)
-  const savedDrops = isOwnProfile
-    ? await prisma.savedDrop.findMany({
-        where: { userId: dbUser.id },
-        orderBy: { createdAt: "desc" },
-        include: {
-          drop: {
-            select: {
-              id: true,
-              slug: true,
-              name: true,
-              coverImage: true,
-              user: { select: { username: true, displayName: true } },
-              _count: { select: { pieces: true } }
-            }
-          }
+  // All remaining queries: tolerate failure gracefully
+  let isFollowing = false;
+  let drops: Array<{ id: string; slug: string; name: string; coverImage: string; _count: { pieces: number } }> = [];
+  let closetPieces: Array<{ id: string; name: string; primaryPhoto: string | null; category: string; brand: string | null }> = [];
+  let savedDropRows: Array<{
+    drop: { id: string; slug: string; name: string; coverImage: string; user: { username: string; displayName: string }; _count: { pieces: number } };
+  }> = [];
+
+  try {
+    if (authUser && !isOwnProfile) {
+      const follow = await prisma.follow.findUnique({
+        where: {
+          followerId_followingId: { followerId: authUser.id, followingId: dbUser.id }
         }
-      })
-    : [];
+      });
+      isFollowing = !!follow;
+    }
+
+    [drops, closetPieces, savedDropRows] = await Promise.all([
+      prisma.drop.findMany({
+        where: {
+          userId: dbUser.id,
+          ...(isOwnProfile ? {} : { publishedAt: { not: null }, isPublic: true })
+        },
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          coverImage: true,
+          _count: { select: { pieces: true } }
+        }
+      }),
+      prisma.piece.findMany({
+        where: {
+          userId: dbUser.id,
+          isArchived: false,
+          ...(isOwnProfile ? {} : { isPublic: true })
+        },
+        orderBy: { createdAt: "desc" },
+        take: 60,
+        select: { id: true, name: true, primaryPhoto: true, category: true, brand: true }
+      }),
+      isOwnProfile
+        ? prisma.savedDrop.findMany({
+            where: { userId: dbUser.id },
+            orderBy: { createdAt: "desc" },
+            include: {
+              drop: {
+                select: {
+                  id: true,
+                  slug: true,
+                  name: true,
+                  coverImage: true,
+                  user: { select: { username: true, displayName: true } },
+                  _count: { select: { pieces: true } }
+                }
+              }
+            }
+          })
+        : Promise.resolve([])
+    ]);
+  } catch (err) {
+    console.error("[/profile/" + username + "] secondary queries failed (rendering with empty tabs):", err);
+  }
+
+  const savedDrops = savedDropRows;
 
   return (
     <div className="min-h-screen bg-bg">

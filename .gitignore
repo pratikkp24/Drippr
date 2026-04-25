@@ -17,3 +17,5 @@ client_secret_*.json
 *.pem
 *.key
 .claude/worktrees/
+vercel-env.json
+vercel-env.*.json
