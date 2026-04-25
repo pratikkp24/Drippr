@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getUser } from "@/lib/supabase/server";
 
@@ -8,12 +9,14 @@ export default async function LandingPage() {
   return (
     <main className="relative min-h-screen flex flex-col overflow-hidden">
       {/* Static poster — shown on mobile and while video loads */}
-      <img
+      <Image
         src="/hero-poster.jpg"
         alt=""
         aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-cover object-[20%_center] sm:object-center z-0 sm:hidden"
-        fetchPriority="high"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-[20%_center] z-0 sm:hidden"
       />
 
       {/* Full-bleed video background — desktop only */}
