@@ -7,13 +7,23 @@ export default async function LandingPage() {
   if (user) redirect("/home");
   return (
     <main className="relative min-h-screen flex flex-col overflow-hidden">
-      {/* Full-bleed video background */}
+      {/* Static poster — shown on mobile and while video loads */}
+      <img
+        src="/hero-poster.jpg"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover object-[20%_center] sm:object-center z-0 sm:hidden"
+        fetchPriority="high"
+      />
+
+      {/* Full-bleed video background — desktop only */}
       <video
         autoPlay
         loop
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover object-[20%_center] sm:object-center z-0"
+        poster="/hero-poster.jpg"
+        className="absolute inset-0 w-full h-full object-cover object-center z-0 hidden sm:block"
       >
         <source src="/hero-bg.mp4" type="video/mp4" />
       </video>
