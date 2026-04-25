@@ -1,11 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { redirect } from "next/navigation";
-import { getUser } from "@/lib/supabase/server";
 
-export default async function LandingPage() {
-  const user = await getUser();
-  if (user) redirect("/home");
+export default function LandingPage() {
   return (
     <main className="relative min-h-screen flex flex-col overflow-hidden">
       {/* Static poster — shown on mobile and while video loads */}
@@ -15,7 +11,7 @@ export default async function LandingPage() {
         aria-hidden="true"
         fill
         priority
-        sizes="100vw"
+        sizes="(max-width: 639px) 100vw, 1px"
         className="object-cover object-[20%_center] z-0 sm:hidden"
       />
 
