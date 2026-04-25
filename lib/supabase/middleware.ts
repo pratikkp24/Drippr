@@ -56,12 +56,14 @@ export async function updateSession(request: NextRequest) {
   if (user && isAuthRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/home";
+    url.search = ""; // strip stale ?error=… or ?next=… so /home doesn't inherit them
     return NextResponse.redirect(url);
   }
 
   if (user && pathname === "/") {
     const url = request.nextUrl.clone();
     url.pathname = "/home";
+    url.search = "";
     return NextResponse.redirect(url);
   }
 

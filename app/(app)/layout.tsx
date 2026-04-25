@@ -25,12 +25,22 @@ const NAV_ITEMS = [
 ];
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const user = await getUser();
+  let user;
+  try {
+    user = await getUser();
+  } catch (err) {
+    console.error("[AppLayout] getUser failed:", err);
+    redirect("/signin?error=" + encodeURIComponent("We couldn’t restore your session. Please sign in again."));
+  }
   if (!user) redirect("/signin");
 
-  const dbUser = await prisma.user.findUnique({
-    where: { id: user.id }
-  });
+  let dbUser;
+  try {
+    dbUser = await prisma.user.findUnique({ where: { id: user.id } });
+  } catch (err) {
+    console.error("[AppLayout] prisma.user.findUnique failed:", err);
+    redirect("/signin?error=" + encodeURIComponent("Something went wrong loading your account. Please sign in again."));
+  }
 
   if (!dbUser) redirect("/onboarding/profile");
 
