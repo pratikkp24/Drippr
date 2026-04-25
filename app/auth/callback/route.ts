@@ -14,9 +14,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(`${origin}${next}`);
     }
     console.error("[auth/callback] exchangeCodeForSession error:", error.message);
-    return NextResponse.redirect(
-      `${origin}/signin?error=${encodeURIComponent(error.message)}`
-    );
+    const isPkce = error.message.toLowerCase().includes("pkce") || error.message.toLowerCase().includes("code verifier");
+    const friendly = isPkce
+      ? "Your link expired or was opened in a different browser. Please sign in below."
+      : error.message;
+    return NextResponse.redirect(`${origin}/signin?error=${encodeURIComponent(friendly)}`);
   }
 
   const err = searchParams.get("error_description") || searchParams.get("error") || "missing_code";
